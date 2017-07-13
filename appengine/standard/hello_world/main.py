@@ -57,12 +57,13 @@ class SlipHandler(webapp2.RequestHandler):
             s_d['self'] = "/slip/" + id
             self.response.write(json.dumps(s_d))
         else:
-            
-            #results = Slip.query().fetch()
-            get_boat_query_results = [get_boat_query.to_dict()
-                                      for get_boat_query in Slip.query()]
 
-            self.response.write(json.dumps(get_boat_query_results))
+            #results = Slip.query().fetch()
+            get_slip_query_results = [get_slip_query.to_dict()
+                                      for get_slip_query in Slip.query()]
+
+            self.response.write(json.dumps(get_slip_query_results))
+
 
 
 
@@ -83,7 +84,10 @@ class BoatHandler(webapp2.RequestHandler):
             b_d['self'] = "/boat/" + id
             self.response.write(json.dumps(b_d))
         else:
-            self.response.write("There are no boats")
+            get_boat_query_results = [get_boat_query.to_dict()
+                                      for get_boat_query in Boat.query()]
+
+            self.response.write(json.dumps(get_boat_query_results))
 
     def delete(self, id=None):
         if id:
