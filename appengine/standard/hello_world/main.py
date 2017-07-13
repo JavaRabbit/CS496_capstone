@@ -28,6 +28,16 @@ class SlipHandler(webapp2.RequestHandler):
         slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
         self.response.write(json.dumps(slip_dict))
 
+    def update(self, id=None):
+        if id:
+            #s = ndb.Key(urlsafe=id).get()
+            #s.put() # put the info in
+            #s_dict = s.to_dict()
+            #s_dict['self'] = '/slip/' + s.key.urlsafe()
+            #self.response.write(json.dumps(s_dict))
+            self.response.write("Foobar")
+
+
     def delete(self, id=None):
         if id:
             s = ndb.Key(urlsafe=id).get()
@@ -47,7 +57,14 @@ class SlipHandler(webapp2.RequestHandler):
             s_d['self'] = "/slip/" + id
             self.response.write(json.dumps(s_d))
         else:
-            self.response.write("There are no slips")
+            
+            #results = Slip.query().fetch()
+            get_boat_query_results = [get_boat_query.to_dict()
+                                      for get_boat_query in Slip.query()]
+
+            self.response.write(json.dumps(get_boat_query_results))
+
+
 
 class BoatHandler(webapp2.RequestHandler):
     def post(self):
