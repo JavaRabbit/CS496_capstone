@@ -13,7 +13,7 @@ class Boat(ndb.Model):
 
 class Slip(ndb.Model):
     number = ndb.IntegerProperty()
-    current_boat = addresses = ndb.StructuredProperty(Boat)
+    current_boat = ndb.StructuredProperty(Boat)
     arrival_date = ndb.StringProperty()
 
 
@@ -32,27 +32,12 @@ class SlipHandler2(webapp2.RequestHandler):
 
 class SlipHandler(webapp2.RequestHandler):
     def post(self, id=None):
-        if id:
-            s = ndb.Key(urlsafe=id).get()
-            slip_data = json.loads(self.request.body)
-            keyArr = slip_data.keys()
-            first = keyArr[0] #number
-            slip_dict = s.to_dict()
-            slip_dict[first] = slip_data[keyArr[0]]
-            #s[first] = slip_data[first]
-            s.put()
-            #self.response.write(slip_data['number'])
-            self.response.write(slip_data)
-
-        else:
-            slip_data = json.loads(self.request.body)
-            new_slip = Slip(number=slip_data['number'])
-            new_slip.put()
-            slip_dict = new_slip.to_dict()
-            slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
-            self.response.write(json.dumps(slip_dict))
-
-
+        slip_data = json.loads(self.request.body)
+        new_slip = Slip(number=slip_data['number'], arrival_date=slip_data['arrival_date'])
+        new_slip.put()
+        slip_dict = new_slip.to_dict()
+        slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
+        self.response.write(json.dumps(slip_dict))
 
 
     def delete(self, id=None):
