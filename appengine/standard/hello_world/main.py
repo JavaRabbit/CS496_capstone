@@ -28,6 +28,17 @@ class SlipHandler(webapp2.RequestHandler):
         slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
         self.response.write(json.dumps(slip_dict))
 
+    def delete(self, id=None):
+        if id:
+            s = ndb.Key(urlsafe=id).get()
+            s_d = s.to_dict()
+            s_d['self'] = "/slip/" + id
+            #self.response.write(s_d)
+            s.key.delete()
+
+        else:
+            self.response.write("You cannot delete a slip with no id")
+
 
     def get(self, id=None):
         if id:
