@@ -4,7 +4,6 @@ import json
 
 
 
-
 class Boat(ndb.Model):
     name = ndb.StringProperty(required=True)
     type = ndb.StringProperty()
@@ -33,6 +32,7 @@ class SlipHandler2(webapp2.RequestHandler):
 
 # updates a slip's boat name
 # put /slip/slip_id/putboat
+# {'name' ; "some name", 'arrival_date': "some date"}
 class SlipHandler3(webapp2.RequestHandler):
     def put(self, id=None):
         s = ndb.Key(urlsafe=id).get()
@@ -40,6 +40,7 @@ class SlipHandler3(webapp2.RequestHandler):
         #s.current_boat = Boat("jasmine")
         #s.current_boat = "jasminefoo" # line that breaks
         s.current_boat = slip_data['name']
+        s.arrival_date = slip_data['arrival_date']
         s.put()
         self.response.write("you changed the boat in the slip")
 
@@ -117,6 +118,19 @@ class BoatHandler(webapp2.RequestHandler):
         else:
             self.response.write("You cannot delete a Boat with no id")
 
+    # for boat to change at_sea
+    # have to use {"at_sea": false}  Note the small f Python uses F
+    def put(self, id=None):
+        boat_data = json.loads(self.request.body)
+        if id:
+            b = ndb.Key(urlsafe=id).get()
+            if boat_data['at_sea'] == False:
+                b.at_sea = False
+                b.put()
+            #b.at_sea = boat_data['at_sea']
+            #b.put()
+            self.response.write("you updated at sea to ")
+
 
 class FishHandler(webapp2.RequestHandler):
     def post(self):
@@ -149,8 +163,8 @@ app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/fish', FishHandler),
     ('/fish/(.*)', FishHandler),
-    ('/boat', BoatHandler),
     ('/boat/(.*)', BoatHandler),
+    ('/boat', BoatHandler),
     ('/slip/(.*)/date', SlipHandler2),
     ('/slip/(.*)/putboat', SlipHandler3),
     ('/slip', SlipHandler),
