@@ -32,7 +32,7 @@ class SlipHandler(webapp2.RequestHandler):
         if id:
             s = ndb.Key(urlsafe=id).get()
             s_d = s.to_dict()
-            s_d['self'] = "/slip/" + id
+            #s_d['self'] = "/slip/" + id
             #self.response.write(s_d)
             s.key.delete()
 
@@ -67,11 +67,15 @@ class BoatHandler(webapp2.RequestHandler):
             self.response.write(json.dumps(b_d))
         else:
             self.response.write("There are no boats")
-        #self.response.headers['Content-Type'] = 'text/plain'
-        #self.response.write('There are some fish')
 
+    def delete(self, id=None):
+        if id:
+            b = ndb.Key(urlsafe=id).get()
+            b_d = b.to_dict()
+            b.key.delete()
 
-
+        else:
+            self.response.write("You cannot delete a Boat with no id")
 
 
 class FishHandler(webapp2.RequestHandler):
