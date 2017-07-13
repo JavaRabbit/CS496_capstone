@@ -12,7 +12,7 @@ class Boat(ndb.Model):
     at_sea = ndb.BooleanProperty(default=True)
 
 class Slip(ndb.Model):
-    number = ndb.IntegerProperty()
+    number = ndb.IntegerProperty(required=True)
     #current_boat = ndb.StructuredProperty(Boat)
     current_boat = ndb.StringProperty()
     arrival_date = ndb.StringProperty()
@@ -31,21 +31,22 @@ class SlipHandler2(webapp2.RequestHandler):
         s.put()
         self.response.write("wonky")
 
-# updates a slip's boat nam
-# put /slip/slip_id/boat
+# updates a slip's boat name
+# put /slip/slip_id/putboat
 class SlipHandler3(webapp2.RequestHandler):
     def put(self, id=None):
         s = ndb.Key(urlsafe=id).get()
         slip_data = json.loads(self.request.body)
         #s.current_boat = Boat("jasmine")
-        s.current_boat = "jasminefoo" # line that breaks
+        #s.current_boat = "jasminefoo" # line that breaks
+        s.current_boat = slip_data['name']
         s.put()
         self.response.write("you changed the boat in the slip")
 
 class SlipHandler(webapp2.RequestHandler):
     def post(self, id=None):
         slip_data = json.loads(self.request.body)
-        new_slip = Slip(number=slip_data['number'], arrival_date=slip_data['arrival_date'])
+        new_slip = Slip(number=slip_data['number'])
         new_slip.put()
         slip_dict = new_slip.to_dict()
         slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
@@ -60,7 +61,7 @@ class SlipHandler(webapp2.RequestHandler):
             #self.response.write(s_d)
             if s.current_boat != None:   ##### OMG its NOne not null. stupid!
                 s.key.delete()
-                self.response.write("there is a boat here")
+                self.response.write(id)
 
 
         else:
@@ -151,7 +152,7 @@ app = webapp2.WSGIApplication([
     ('/boat', BoatHandler),
     ('/boat/(.*)', BoatHandler),
     ('/slip/(.*)/date', SlipHandler2),
-    ('/slip/(.*)/boat', SlipHandler3),
+    ('/slip/(.*)/putboat', SlipHandler3),
     ('/slip', SlipHandler),
     ('/slip/(.*)', SlipHandler),
 
