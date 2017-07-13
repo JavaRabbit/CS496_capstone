@@ -13,7 +13,8 @@ class Boat(ndb.Model):
 
 class Slip(ndb.Model):
     number = ndb.IntegerProperty()
-    current_boat = ndb.StructuredProperty(Boat)
+    #current_boat = ndb.StructuredProperty(Boat)
+    current_boat = ndb.StringProperty()
     arrival_date = ndb.StringProperty()
 
 
@@ -21,7 +22,7 @@ class Fish(ndb.Model):
     name = ndb.StringProperty(required=True)
     numFriends = ndb.IntegerProperty()
 
-
+# This updates Slip's arrival_date
 class SlipHandler2(webapp2.RequestHandler):
     def put(self, id=None):
         s = ndb.Key(urlsafe=id).get()
@@ -29,6 +30,17 @@ class SlipHandler2(webapp2.RequestHandler):
         s.arrival_date = slip_data['arrival_date']
         s.put()
         self.response.write("wonky")
+
+# updates a slip's boat nam
+# put /slip/slip_id/boat
+class SlipHandler3(webapp2.RequestHandler):
+    def put(self, id=None):
+        s = ndb.Key(urlsafe=id).get()
+        slip_data = json.loads(self.request.body)
+        #s.current_boat = Boat("jasmine")
+        s.current_boat = "jasminefoo" # line that breaks
+        s.put()
+        self.response.write("you changed the boat in the slip")
 
 class SlipHandler(webapp2.RequestHandler):
     def post(self, id=None):
@@ -39,14 +51,17 @@ class SlipHandler(webapp2.RequestHandler):
         slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
         self.response.write(json.dumps(slip_dict))
 
-
+    # to delete a slip /slip/slip_id/
     def delete(self, id=None):
         if id:
             s = ndb.Key(urlsafe=id).get()
             s_d = s.to_dict()
             #s_d['self'] = "/slip/" + id
             #self.response.write(s_d)
-            s.key.delete()
+            if s.current_boat != None:   ##### OMG its NOne not null. stupid!
+                s.key.delete()
+                self.response.write("there is a boat here")
+
 
         else:
             self.response.write("You cannot delete a slip with no id")
@@ -136,6 +151,7 @@ app = webapp2.WSGIApplication([
     ('/boat', BoatHandler),
     ('/boat/(.*)', BoatHandler),
     ('/slip/(.*)/date', SlipHandler2),
+    ('/slip/(.*)/boat', SlipHandler3),
     ('/slip', SlipHandler),
     ('/slip/(.*)', SlipHandler),
 
