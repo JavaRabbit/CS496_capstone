@@ -30,7 +30,7 @@ class SlipHandler2(webapp2.RequestHandler):
         s.put()
         self.response.write("wonky")
 
-# updates a slip's boat name
+# updates a slip's boat name and arrival
 # put /slip/slip_id/putboat
 # {'name' ; "some name", 'arrival_date': "some date"}
 class SlipHandler3(webapp2.RequestHandler):
@@ -54,6 +54,8 @@ class SlipHandler(webapp2.RequestHandler):
         self.response.write(json.dumps(slip_dict))
 
     # to delete a slip /slip/slip_id/
+    # make it so that if a slip is occupied
+    # that the boat becomes 'at_sea' = true
     def delete(self, id=None):
         if id:
             s = ndb.Key(urlsafe=id).get()
@@ -61,7 +63,11 @@ class SlipHandler(webapp2.RequestHandler):
             #s_d['self'] = "/slip/" + id
             #self.response.write(s_d)
             if s.current_boat != None:   ##### OMG its NOne not null. stupid!
-                s.key.delete()
+                #boat_data = json.loads(self.request.body) # get the boat data
+                b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
+                b.at_sea = True  # change to at_sea is true
+                b.put()
+                s.key.delete() # this deletes the slip
                 self.response.write(id)
 
 
@@ -126,6 +132,9 @@ class BoatHandler(webapp2.RequestHandler):
             b = ndb.Key(urlsafe=id).get()
             if boat_data['at_sea'] == False:
                 b.at_sea = False
+                b.put()
+            elif boat_data['at_sea'] == True:
+                b.at_sea = True
                 b.put()
             #b.at_sea = boat_data['at_sea']
             #b.put()
