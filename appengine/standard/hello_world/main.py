@@ -2,9 +2,7 @@ from google.appengine.ext import ndb
 import webapp2
 import json
 
-class Slip(ndb.Model):
-    number = ndb.IntegerProperty()
-    arrival_date = ndb.DateProperty()
+
 
 
 class Boat(ndb.Model):
@@ -13,29 +11,48 @@ class Boat(ndb.Model):
     length = ndb.IntegerProperty()
     at_sea = ndb.BooleanProperty(default=True)
 
+class Slip(ndb.Model):
+    number = ndb.IntegerProperty()
+    current_boat = addresses = ndb.StructuredProperty(Boat)
+    arrival_date = ndb.StringProperty()
+
 
 class Fish(ndb.Model):
     name = ndb.StringProperty(required=True)
     numFriends = ndb.IntegerProperty()
 
 
-class SlipHandler(webapp2.RequestHandler):
-    def post(self):
+class SlipHandler2(webapp2.RequestHandler):
+    def put(self, id=None):
+        s = ndb.Key(urlsafe=id).get()
         slip_data = json.loads(self.request.body)
-        new_slip = Slip(number=slip_data['number'])
-        new_slip.put()
-        slip_dict = new_slip.to_dict()
-        slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
-        self.response.write(json.dumps(slip_dict))
+        s.arrival_date = slip_data['arrival_date']
+        s.put()
+        self.response.write("wonky")
 
-    def update(self, id=None):
+class SlipHandler(webapp2.RequestHandler):
+    def post(self, id=None):
         if id:
-            #s = ndb.Key(urlsafe=id).get()
-            #s.put() # put the info in
-            #s_dict = s.to_dict()
-            #s_dict['self'] = '/slip/' + s.key.urlsafe()
-            #self.response.write(json.dumps(s_dict))
-            self.response.write("Foobar")
+            s = ndb.Key(urlsafe=id).get()
+            slip_data = json.loads(self.request.body)
+            keyArr = slip_data.keys()
+            first = keyArr[0] #number
+            slip_dict = s.to_dict()
+            slip_dict[first] = slip_data[keyArr[0]]
+            #s[first] = slip_data[first]
+            s.put()
+            #self.response.write(slip_data['number'])
+            self.response.write(slip_data)
+
+        else:
+            slip_data = json.loads(self.request.body)
+            new_slip = Slip(number=slip_data['number'])
+            new_slip.put()
+            slip_dict = new_slip.to_dict()
+            slip_dict['self'] = '/slip/' + new_slip.key.urlsafe()
+            self.response.write(json.dumps(slip_dict))
+
+
 
 
     def delete(self, id=None):
@@ -55,6 +72,7 @@ class SlipHandler(webapp2.RequestHandler):
             s = ndb.Key(urlsafe=id).get()
             s_d = s.to_dict()
             s_d['self'] = "/slip/" + id
+            #self.response.write(s.key())
             self.response.write(json.dumps(s_d))
         else:
 
@@ -132,6 +150,8 @@ app = webapp2.WSGIApplication([
     ('/fish/(.*)', FishHandler),
     ('/boat', BoatHandler),
     ('/boat/(.*)', BoatHandler),
+    ('/slip/(.*)/date', SlipHandler2),
     ('/slip', SlipHandler),
     ('/slip/(.*)', SlipHandler),
+
 ], debug=True)
