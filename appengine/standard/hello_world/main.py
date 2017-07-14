@@ -173,7 +173,23 @@ class BoatHandler(webapp2.RequestHandler):
             b = ndb.Key(urlsafe=id).get()
             b_d = b.to_dict()
             b.key.delete()
-            self.response.write(b_d['name'])
+
+            # we deleted the boat, now empty the slip
+            # get all the slips into a variable
+            get_slip_query_results = [get_slip_query.to_dict()
+                                      for get_slip_query in Slip.query()]
+
+            urlstr = b.key.urlsafe()
+            if  any(d['current_boat'] == urlstr for d in get_slip_query_results):
+                qu = Slip.query(Slip.current_boat == urlstr).fetch()
+                res = qu[0]
+                theSlip = Slip.get_by_id(res.key.id())
+                theSlip.current_boat = None
+                theSlip.arrival_date = None
+                theSlip.put()
+                self.response.write(b_d['name'])
+            else:
+                self.response.write("The deleted boat is not in a slip")
 
         else:
             self.response.write("You cannot delete a Boat with no id")
