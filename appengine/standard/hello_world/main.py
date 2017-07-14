@@ -96,7 +96,22 @@ class SlipHandler(webapp2.RequestHandler):
 class BoatHandler(webapp2.RequestHandler):
     def post(self):
         boat_data = json.loads(self.request.body)
-        new_boat = Boat(name=boat_data['name'])
+        #new_boat = Boat(name=boat_data['name'], length=boat_data['length'])
+        if 'type' not in boat_data:
+            if 'length' not in boat_data:
+                # means name only in data
+                new_boat = Boat(name=boat_data['name'])
+            else:
+                # means name + length
+                new_boat = Boat(name=boat_data['name'], length=boat_data['length'])
+        elif 'length' not in boat_data:
+            # name + type
+            new_boat = Boat(name=boat_data['name'], type=boat_data['type'])
+        else:
+            # name + type + length
+            new_boat = Boat(name=boat_data['name'], type=boat_data['type'], length=boat_data['length'])
+
+
         new_boat.put()
         boat_dict = new_boat.to_dict()
         boat_dict['self'] = '/boat/' + new_boat.key.urlsafe()
@@ -126,6 +141,7 @@ class BoatHandler(webapp2.RequestHandler):
 
     # for boat to change at_sea
     # have to use {"at_sea": false}  Note the small f Python uses F
+    #  need to update so that putting boat at_sea empties out the slip
     def put(self, id=None):
         boat_data = json.loads(self.request.body)
         if id:
@@ -159,8 +175,7 @@ class FishHandler(webapp2.RequestHandler):
             self.response.write(json.dumps(f_d))
         else:
             self.response.write("There are no fish")
-        #self.response.headers['Content-Type'] = 'text/plain'
-        #self.response.write('There are some fish')
+
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
