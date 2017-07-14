@@ -95,7 +95,19 @@ class SlipHandler(webapp2.RequestHandler):
 
             self.response.write(json.dumps(get_slip_query_results))
 
-
+# this class for boat handles (2) move boat to the sea
+# and free up the slip
+class BoatHandler2(webapp2.RequestHandler):
+    def put(self, id=None):
+        # this changes the boat to the sea
+        if id:
+            b = ndb.Key(urlsafe=id).get()
+            if b.at_sea == False:
+                b.at_sea = True # set to true, moved boat to the sea
+                b.put()
+                self.response.write("moved boat to the sea")
+            else:
+                self.response.write("boat already at sea")
 
 
 class BoatHandler(webapp2.RequestHandler):
@@ -189,14 +201,16 @@ class MainPage(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage),
+
     ('/fish', FishHandler),
     ('/fish/(.*)', FishHandler),
+    ('/boat/(.*)/tosea', BoatHandler2),
     ('/boat/(.*)', BoatHandler),
     ('/boat', BoatHandler),
     ('/slip/(.*)/date', SlipHandler2),
     ('/slip/(.*)/putboat', SlipHandler3),
     ('/slip', SlipHandler),
     ('/slip/(.*)', SlipHandler),
+    ('/', MainPage),
 
 ], debug=True)
