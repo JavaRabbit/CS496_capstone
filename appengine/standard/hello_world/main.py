@@ -106,7 +106,24 @@ class SlipHandler(webapp2.RequestHandler):
         s.put()
         self.response.write(json.dumps(s_d))
 
+class BoatHandler2(webapp2.RequestHandler):
+    #  PUT /boat/{boat_id}/boat  allows users to modify a boat
+    def put(self, id=None):
+        boat_data = json.loads(self.request.body)
+        b = ndb.Key(urlsafe=id).get()
+        b_d = b.to_dict()
 
+        if 'name' in boat_data:
+            b_d['name'] = boat_data['name']
+            b.name = boat_data['name']
+        if 'type' in boat_data:
+            b_d['type'] = boat_data['type']
+            b.type = boat_data['type']
+        if 'length' in boat_data:
+            b_d['length'] = boat_data['length']
+            b.length = boat_data['length']
+        b.put()
+        self.response.write(json.dumps(b_d))
 
 
 class BoatHandler(webapp2.RequestHandler):
@@ -236,6 +253,7 @@ app = webapp2.WSGIApplication([
 
     ('/fish', FishHandler),
     ('/fish/(.*)', FishHandler),
+    ('/boat/(.*)/boat', BoatHandler2),
     ('/boat/(.*)', BoatHandler),
     ('/boat', BoatHandler),
     ('/slip/(.*)/date', SlipHandler2),
