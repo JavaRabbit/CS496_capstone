@@ -112,8 +112,12 @@ class BoatHandler2(webapp2.RequestHandler):
                 urlstr = b.key.urlsafe()
                 if  any(d['current_boat'] == urlstr for d in get_slip_query_results):
                     qu = Slip.query(Slip.current_boat == urlstr).fetch()
-
-                    self.response.write(qu)
+                    res = qu[0]
+                    theSlip = Slip.get_by_id(res.key.id())
+                    theSlip.current_boat = None
+                    theSlip.arrival_date = None
+                    theSlip.put()
+                    self.response.write(res.key.id())
                     #self.response.write("Slip foudn and changed")
                 else:
                     #d.current_boat=None
