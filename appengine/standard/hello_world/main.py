@@ -33,12 +33,11 @@ class SlipHandler2(webapp2.RequestHandler):
 # updates a slip's boat name and arrival
 # put /slip/slip_id/putboat
 # {'name' ; "some name", 'arrival_date': "some date"}
-class SlipHandler3(webapp2.RequestHandler):
+class SlipHandlerBoat(webapp2.RequestHandler):
     def put(self, id=None):
         s = ndb.Key(urlsafe=id).get()
         slip_data = json.loads(self.request.body)
-        #s.current_boat = Boat("jasmine")
-        #s.current_boat = "jasminefoo" # line that breaks
+
         s.current_boat = slip_data['name']
         s.arrival_date = slip_data['arrival_date']
         s.put()
@@ -97,6 +96,17 @@ class SlipHandler(webapp2.RequestHandler):
 
             self.response.write(json.dumps(get_slip_query_results))
 
+    #  This PUT method will allow user to update slip number
+    def put(self, id=None):
+        slip_data = json.loads(self.request.body)
+        s = ndb.Key(urlsafe=id).get()
+        s_d = s.to_dict()
+        s_d['number'] = slip_data['number'] # reassign the number
+        s.number = slip_data['number']
+        s.put()
+        self.response.write(json.dumps(s_d))
+
+
 
 
 class BoatHandler(webapp2.RequestHandler):
@@ -135,6 +145,9 @@ class BoatHandler(webapp2.RequestHandler):
                                       for get_boat_query in Boat.query()]
 
             self.response.write(json.dumps(get_boat_query_results))
+
+    def patch(self):
+        self.response.write("this is patch")
 
     def delete(self, id=None):
         if id:
@@ -184,7 +197,7 @@ class BoatHandler(webapp2.RequestHandler):
                     theSlip.current_boat = None
                     theSlip.arrival_date = None
                     theSlip.put()
-                    self.response.write(res.key.id())
+                    self.response.write(json.dumps(b.to_dict()))
                     #self.response.write("Slip foudn and changed")
                 else:
                     self.response.write("No slip found for that ship")
@@ -226,7 +239,7 @@ app = webapp2.WSGIApplication([
     ('/boat/(.*)', BoatHandler),
     ('/boat', BoatHandler),
     ('/slip/(.*)/date', SlipHandler2),
-    ('/slip/(.*)/putboat', SlipHandler3),
+    ('/slip/(.*)/boat', SlipHandlerBoat),
     ('/slip', SlipHandler),
     ('/slip/(.*)', SlipHandler),
     ('/', MainPage),
