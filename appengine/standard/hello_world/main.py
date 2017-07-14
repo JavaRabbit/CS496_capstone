@@ -74,7 +74,9 @@ class SlipHandler(webapp2.RequestHandler):
                 b.put()
                 s.key.delete() # this deletes the slip
                 self.response.write(id)
-
+            else:
+                # there is no boat, but delete the slip anyways
+                s.key.delete()
 
         else:
             self.response.write("You cannot delete a slip with no id")
