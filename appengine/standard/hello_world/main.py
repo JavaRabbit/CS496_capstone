@@ -42,6 +42,11 @@ class SlipHandler3(webapp2.RequestHandler):
         s.current_boat = slip_data['name']
         s.arrival_date = slip_data['arrival_date']
         s.put()
+
+        # also the boat you put in the slip should not be at sea
+        b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
+        b.at_sea = False  # change to at_sea is False
+        b.put()
         self.response.write("you changed the boat in the slip")
 
 class SlipHandler(webapp2.RequestHandler):
