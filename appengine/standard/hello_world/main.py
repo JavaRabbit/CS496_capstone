@@ -35,24 +35,26 @@ class SlipHandler2(webapp2.RequestHandler):
 # {'name' ; "some name", 'arrival_date': "some date"}
 class SlipHandlerBoat(webapp2.RequestHandler):
     def put(self, id=None):
-        s = ndb.Key(urlsafe=id).get()
-        slip_data = json.loads(self.request.body)
+        try:
+            s = ndb.Key(urlsafe=id).get()
+            slip_data = json.loads(self.request.body)
 
-        if s.current_boat == None:
+            if s.current_boat == None:
 
+                s.current_boat = slip_data['name']
+                s.arrival_date = slip_data['arrival_date']
+                s.put()
 
-            s.current_boat = slip_data['name']
-            s.arrival_date = slip_data['arrival_date']
-            s.put()
-
-            # also the boat you put in the slip should not be at sea
-            b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
-            b.at_sea = False  # change to at_sea is False
-            b.put()
-            self.response.write("you changed the boat in the slip")
-        else:
-            self.error(403)  # send reponse 403
-            self.response.write("Sorry, slip is already occupied")
+                # also the boat you put in the slip should not be at sea
+                b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
+                b.at_sea = False  # change to at_sea is False
+                b.put()
+                self.response.write("you changed the boat in the slip")
+            else:
+                self.error(403)  # send reponse 403
+                self.response.write("Sorry, slip is already occupied")
+        except Exception, e:
+            self.response.write("Not a valid slip id. Try again.")
 
 class SlipHandler(webapp2.RequestHandler):
     def post(self, id=None):
@@ -68,32 +70,36 @@ class SlipHandler(webapp2.RequestHandler):
     # that the boat becomes 'at_sea' = true
     def delete(self, id=None):
         if id:
-            s = ndb.Key(urlsafe=id).get()
-            s_d = s.to_dict()
-            #s_d['self'] = "/slip/" + id
-            #self.response.write(s_d)
-            if s.current_boat != None:   ##### OMG its NOne not null. stupid!
-                #boat_data = json.loads(self.request.body) # get the boat data
-                b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
-                b.at_sea = True  # change to at_sea is true
-                b.put()
-                s.key.delete() # this deletes the slip
-                self.response.write(id)
-            else:
-                # there is no boat, but delete the slip anyways
-                s.key.delete()
-
+            try:
+                s = ndb.Key(urlsafe=id).get()
+                s_d = s.to_dict()
+                #s_d['self'] = "/slip/" + id
+                #self.response.write(s_d)
+                if s.current_boat != None:   ##### OMG its NOne not null. stupid!
+                    #boat_data = json.loads(self.request.body) # get the boat data
+                    b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
+                    b.at_sea = True  # change to at_sea is true
+                    b.put()
+                    s.key.delete() # this deletes the slip
+                    self.response.write(id)
+                else:
+                    # there is no boat, but delete the slip anyways
+                    s.key.delete()
+            except Exception, e:
+                self.response.write("Invalid SLIP id")
         else:
             self.response.write("You cannot delete a slip with no id")
 
 
     def get(self, id=None):
         if id:
-            s = ndb.Key(urlsafe=id).get()
-            s_d = s.to_dict()
-            s_d['self'] = "/slip/" + id
-            #self.response.write(s.key())
-            self.response.write(json.dumps(s_d))
+            try:
+                s = ndb.Key(urlsafe=id).get()
+                s_d = s.to_dict()
+                s_d['self'] = "/slip/" + id
+                self.response.write(json.dumps(s_d))
+            except Exception, e:
+                self.response.write("Not a valid Slip id")
         else:
 
             #results = Slip.query().fetch()
@@ -159,10 +165,15 @@ class BoatHandler(webapp2.RequestHandler):
 
     def get(self, id=None):
         if id:
-            b = ndb.Key(urlsafe=id).get()
-            b_d = b.to_dict()
-            b_d['self'] = "/boat/" + id
-            self.response.write(json.dumps(b_d))
+
+            try:
+                b = ndb.Key(urlsafe=id).get()
+                b_d = b.to_dict()
+                b_d['self'] = "/boat/" + id
+                self.response.write(json.dumps(b_d))
+            except Exception, e:
+                self.response.write("Not a valid Boat id")
+
         else:
             get_boat_query_results = [get_boat_query.to_dict()
                                       for get_boat_query in Boat.query()]
@@ -174,44 +185,16 @@ class BoatHandler(webapp2.RequestHandler):
 
     def delete(self, id=None):
         if id:
-            b = ndb.Key(urlsafe=id).get()
-            b_d = b.to_dict()
-            b.key.delete()
+            try:
+                b = ndb.Key(urlsafe=id).get()
+                b_d = b.to_dict()
+                b.key.delete()
 
-            # we deleted the boat, now empty the slip
-            # get all the slips into a variable
-            get_slip_query_results = [get_slip_query.to_dict()
-                                      for get_slip_query in Slip.query()]
-
-            urlstr = b.key.urlsafe()
-            if  any(d['current_boat'] == urlstr for d in get_slip_query_results):
-                qu = Slip.query(Slip.current_boat == urlstr).fetch()
-                res = qu[0]
-                theSlip = Slip.get_by_id(res.key.id())
-                theSlip.current_boat = None
-                theSlip.arrival_date = None
-                theSlip.put()
-                self.response.write(b_d['name'])
-            else:
-                self.response.write("The deleted boat is not in a slip")
-
-        else:
-            self.response.write("You cannot delete a Boat with no id")
-
-    # method to move a boat to "at_sea"
-    #
-    # updates so that putting boat at_sea empties out the slip
-    def put(self, id=None):
-        # this changes the boat to the sea
-        if id:
-            b = ndb.Key(urlsafe=id).get()
-            if b.at_sea == False:
-                b.at_sea = True # set to true, moved boat to the sea
-                b.put()
-
+                # we deleted the boat, now empty the slip
                 # get all the slips into a variable
                 get_slip_query_results = [get_slip_query.to_dict()
                                           for get_slip_query in Slip.query()]
+
                 urlstr = b.key.urlsafe()
                 if  any(d['current_boat'] == urlstr for d in get_slip_query_results):
                     qu = Slip.query(Slip.current_boat == urlstr).fetch()
@@ -220,13 +203,45 @@ class BoatHandler(webapp2.RequestHandler):
                     theSlip.current_boat = None
                     theSlip.arrival_date = None
                     theSlip.put()
-                    self.response.write(json.dumps(b.to_dict()))
-                    #self.response.write("Slip foudn and changed")
+                    self.response.write(b_d['name'])
                 else:
-                    self.response.write("No slip found for that ship")
-            else:
-                self.response.write("boat already at sea")
+                    self.response.write("The deleted boat is not in a slip")
+            except Exception, e:
+                self.response.write("Invalid Boat ID")
+        else:
+            self.response.write("You cannot delete a Boat with no id")
 
+    # method to move a boat to "at_sea"
+    #
+    # updates so that putting boat at_sea empties out the slip
+    def put(self, id=None):
+        # this changes the boat to the sea
+        try:
+            if id:
+                b = ndb.Key(urlsafe=id).get()
+                if b.at_sea == False:
+                    b.at_sea = True # set to true, moved boat to the sea
+                    b.put()
+
+                    # get all the slips into a variable
+                    get_slip_query_results = [get_slip_query.to_dict()
+                                              for get_slip_query in Slip.query()]
+                    urlstr = b.key.urlsafe()
+                    if  any(d['current_boat'] == urlstr for d in get_slip_query_results):
+                        qu = Slip.query(Slip.current_boat == urlstr).fetch()
+                        res = qu[0]
+                        theSlip = Slip.get_by_id(res.key.id())
+                        theSlip.current_boat = None
+                        theSlip.arrival_date = None
+                        theSlip.put()
+                        self.response.write(json.dumps(b.to_dict()))
+                        #self.response.write("Slip foudn and changed")
+                    else:
+                        self.response.write("No slip found for that ship")
+                else:
+                    self.response.write("boat already at sea")
+        except Exception, e:
+            self.response.write("Not a valid boat id.")
 
 
 class FishHandler(webapp2.RequestHandler):
