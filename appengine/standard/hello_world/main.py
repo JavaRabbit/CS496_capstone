@@ -38,15 +38,21 @@ class SlipHandlerBoat(webapp2.RequestHandler):
         s = ndb.Key(urlsafe=id).get()
         slip_data = json.loads(self.request.body)
 
-        s.current_boat = slip_data['name']
-        s.arrival_date = slip_data['arrival_date']
-        s.put()
+        if s.current_boat == None:
 
-        # also the boat you put in the slip should not be at sea
-        b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
-        b.at_sea = False  # change to at_sea is False
-        b.put()
-        self.response.write("you changed the boat in the slip")
+
+            s.current_boat = slip_data['name']
+            s.arrival_date = slip_data['arrival_date']
+            s.put()
+
+            # also the boat you put in the slip should not be at sea
+            b = ndb.Key(urlsafe=s.current_boat).get() # this should get the boat
+            b.at_sea = False  # change to at_sea is False
+            b.put()
+            self.response.write("you changed the boat in the slip")
+        else:
+            self.error(403)  # send reponse 403
+            self.response.write("Sorry, slip is already occupied")
 
 class SlipHandler(webapp2.RequestHandler):
     def post(self, id=None):
