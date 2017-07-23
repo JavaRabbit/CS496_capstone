@@ -68,14 +68,33 @@ class UserHandler(webapp2.RequestHandler):
                                       for get_user_query in User.query()]
         self.response.write(json.dumps(get_user_query_results))  # display results to user
 
+
+
+class UserHandler2(webapp2.RequestHandler):
+    def get(self, username=None):
+        if username:
+            query = User.query(User.username == username).get()
+            q_d = query.to_dict()
+            self.response.write(json.dumps(q_d))
+
 class SignIn(webapp2.RequestHandler):
     def get(self):
         template = JINJA_ENV.get_template('signIn.html')
         # controller tells to render the index.html template
         self.response.out.write(template.render())
 
-    #def post(self):
+    def post(self):
         # verify that username and password are correct
+        username = self.request.get("username")
+        password = self.request.get("password")
+        query = User.query(User.username== username).fetch()
+        if query:
+            # user was found. redirect to his/her page
+            self.redirect("/user/" + username)
+        else:
+            self.response.write("Not found")
+
+        #self.redirect("/users")
 
 app = webapp2.WSGIApplication([
 
@@ -85,6 +104,7 @@ app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/createUser', CreateUser),
     ('/signIn', SignIn),
-    ('/users', UserHandler)
+    ('/users', UserHandler),
+    ('/user/(.*)', UserHandler2)
 
 ], debug=True)
