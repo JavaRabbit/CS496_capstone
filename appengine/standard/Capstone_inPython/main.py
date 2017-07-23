@@ -3,6 +3,9 @@ import webapp2
 import json
 import os
 import jinja2
+import smtplib
+
+
 
 JINJA_ENV = jinja2.Environment(
  loader = jinja2.FileSystemLoader(os.path.dirname(__file__) + "/templates"))
@@ -13,6 +16,12 @@ class User(ndb.Model):
     password = ndb.StringProperty(required=True)
     email = ndb.StringProperty()
     signature = ndb.IntegerProperty()
+
+
+class Employee(ndb.Model):
+    name = ndb.StringProperty(required = True)
+    email = ndb.StringProperty(required = True)
+    manager = ndb.StringProperty(required= True)
 
 
 '''
@@ -71,11 +80,34 @@ class UserHandler(webapp2.RequestHandler):
 
 
 class UserHandler2(webapp2.RequestHandler):
+    # user has signed in, and is a confirmed user
     def get(self, username=None):
         if username:
             query = User.query(User.username == username).get()
             q_d = query.to_dict()
             self.response.write(json.dumps(q_d))
+
+            # create a dictionary we will use in our templates
+            template_vars = {
+            "name" : q_d['name'] # or username?? which to pick
+            }
+
+            # test sending out email
+            FROM = "kbonnie@gmail.com"
+            TO = ['kbonnie@gmail.com'] # must be list
+            SUBJECT = "HELLO FROM APP"
+            TEXT = "Need to feed the cat"
+            username = "kbonnie@gmail.com"
+            password = 'fakePassword'   ### always remove the password ############################
+            server = smtplib.SMTP('smtp.gmail.com:587')
+            server.ehlo()
+            server.starttls()
+            server.login(username,password)
+            server.sendmail(FROM, TO, TEXT)
+            server.quit()
+
+            template = JINJA_ENV.get_template('home.html')
+            self.response.out.write(template.render(template_vars))
 
 class SignIn(webapp2.RequestHandler):
     def get(self):
