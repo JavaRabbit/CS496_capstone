@@ -15,27 +15,27 @@
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Employee Awards</a>
+        <a class="navbar-brand" href="#">Create a New Account</a>
       </div>
 
     </div>
   </nav>
 
-   <a href="/signIn"><type="button"  class="btn btn-primary">Sign In</button></a>
-   <a href="/createUser"><button type="button" class="btn btn-primary">Create Account</button></a>
-
-
-  <!-- the form for create user -->
-  <form action="/" method="post">
-          First name:<br>
-          <input type="text" name="firstname" >
+  <form action="/createUser" method="post">
+          User Name:<br>
+          <input type="text" name="username" >
           <br>
-          Last name:<br>
-          <input type="text" name="lastname" >
-          <br><br>
+          Name:<br>
+          <input type="text" name="realname" >
+          <br>
+          Password:<br>
+          <input type="text" name="password" >
+          <br>
+          Email:<br>
+          <input type="text" name="email" >
+          <br>
         <div><input type="submit" class="btn btn-large btn-primary" value="Sign up"></div>
   </form>
-
 
 </body>
 </html>
