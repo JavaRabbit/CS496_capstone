@@ -21,8 +21,25 @@
     </div>
   </nav>
 
-  Welcome {{name}}
+  Welcome {{name}},  the user is {{user}}
+  <br>
+  did it email {{emailResult}}
    <br>
+
+   <p>
+     You may need to login to your gmail account and then visit <a href="https://myaccount.google.com/lesssecureapps">allow less secure apps to use your Gmail.</a>
+   </p>
+
+   <h2>Create a New Employee</h2>
+   <form action="/employee" method="post">
+           Name:<br>
+           <input type="text" name="name" >
+           <br>
+           Email:<br>
+           <input type="text" name="email" >
+           <br><br>
+         <div><input type="submit" class="btn btn-large btn-primary" value="Create new Employee"></div>
+   </form>
 
 
 

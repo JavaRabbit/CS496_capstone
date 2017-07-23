@@ -1,4 +1,6 @@
 from google.appengine.ext import ndb
+#from google.appengine.api import users
+from google.appengine.api import memcache
 import webapp2
 import json
 import os
@@ -21,7 +23,7 @@ class User(ndb.Model):
 class Employee(ndb.Model):
     name = ndb.StringProperty(required = True)
     email = ndb.StringProperty(required = True)
-    manager = ndb.StringProperty(required= True)
+    manager = ndb.IntegerProperty()
 
 
 '''
@@ -83,28 +85,44 @@ class UserHandler2(webapp2.RequestHandler):
     # user has signed in, and is a confirmed user
     def get(self, username=None):
         if username:
+            # set the user to username
+            #user = users.User(username)
+
+            # set the memcache user to username
+
+
             query = User.query(User.username == username).get()
             q_d = query.to_dict()
             self.response.write(json.dumps(q_d))
 
             # create a dictionary we will use in our templates
             template_vars = {
-            "name" : q_d['name'] # or username?? which to pick
+            "name" : q_d['name'],# or username?? which to pick
+            "user" :  memcache.get(key='user')
             }
 
-            # test sending out email
-            FROM = "kbonnie@gmail.com"
-            TO = ['kbonnie@gmail.com'] # must be list
-            SUBJECT = "HELLO FROM APP"
-            TEXT = "Need to feed the cat"
-            username = "kbonnie@gmail.com"
-            password = 'fakePassword'   ### always remove the password ############################
-            server = smtplib.SMTP('smtp.gmail.com:587')
-            server.ehlo()
-            server.starttls()
-            server.login(username,password)
-            server.sendmail(FROM, TO, TEXT)
-            server.quit()
+            emailResult = ""
+            try:
+                # test sending out email
+                FROM = "kbonnie@gmail.com"
+                TO = ['kbonnie@gmail.com'] # must be list
+                SUBJECT = "HELLO FROM APP"
+                TEXT = "Need to feed the cat"
+                username = "kbonnie@gmail.com"
+                password = ''   ### always remove the password ############################
+                server = smtplib.SMTP('smtp.gmail.com:587')
+                server.ehlo()
+                server.starttls()
+                server.login(username,password)
+                server.sendmail(FROM, TO, TEXT)
+                server.quit()
+                emailResult = "success"
+            except Exception, e:
+                emailResult = "failed to email"
+
+            template_vars['emailResult'] = emailResult
+
+
 
             template = JINJA_ENV.get_template('home.html')
             self.response.out.write(template.render(template_vars))
@@ -117,9 +135,15 @@ class SignIn(webapp2.RequestHandler):
 
     def post(self):
         # verify that username and password are correct
+
         username = self.request.get("username")
         password = self.request.get("password")
         query = User.query(User.username== username).fetch()
+
+        # set the user into memcache
+        memcache.flush_all()
+        memcache.add(key='user', value = self.request.get("username"))
+
         if query:
             # user was found. redirect to his/her page
             self.redirect("/user/" + username)
@@ -127,6 +151,19 @@ class SignIn(webapp2.RequestHandler):
             self.response.write("Not found")
 
         #self.redirect("/users")
+
+class Employee(webapp2.RequestHandler):
+    def post(self):
+        e = Employee()
+        e.name = self.request.get("name")
+        e.email = self.request.get("email")
+        #manager = 44
+        #e.manager = user.get_current_user() # from current user session
+        # = Employee(name=name, email = email)
+        #e.put() # put it into the ndb store
+        self.redirect("/user/" + memcache.get(key='user') )
+
+
 
 app = webapp2.WSGIApplication([
 
@@ -137,6 +174,7 @@ app = webapp2.WSGIApplication([
     ('/createUser', CreateUser),
     ('/signIn', SignIn),
     ('/users', UserHandler),
-    ('/user/(.*)', UserHandler2)
+    ('/user/(.*)', UserHandler2),
+    ('/employee', Employee)
 
 ], debug=True)
