@@ -17,7 +17,7 @@ JINJA_ENV = jinja2.Environment(
 class MM(ndb.Model):
      name = ndb.StringProperty(required = True)
      email = ndb.StringProperty()
-     manager = ndb.IntegerProperty()
+     manager = ndb.StringProperty()
 
 
 class Worker(ndb.Model):
@@ -84,7 +84,7 @@ class UserHandler2(webapp2.RequestHandler):
 
             query = User.query(User.username == username).get()
             q_d = query.to_dict()
-            self.response.write(json.dumps(q_d))
+            #self.response.write(json.dumps(q_d))
 
             # create a dictionary we will use in our templates
             template_vars = {
