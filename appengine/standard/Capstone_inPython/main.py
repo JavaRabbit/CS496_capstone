@@ -185,7 +185,13 @@ class Logout(webapp2.RequestHandler):
 
 class DeleteHandler(webapp2.RequestHandler):
     def post(self, id=None):
-        self.response.write(self.request.get("email"))
+        query = MM.query(MM.email == self.request.get("email")).fetch()
+        for person in query:
+            person.key.delete()
+        #self.response.write(self.request.get("email"))
+        #self.response.write("deleted??")
+        # go back to users home page
+        self.redirect("/user/" + memcache.get(key='user') )
 
 app = webapp2.WSGIApplication([
 
