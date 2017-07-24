@@ -59,8 +59,8 @@ class CreateUser(webapp2.RequestHandler):
         new_user = User(name=realname, username = username, password = password, email = email)
         new_user.put() # put it into the ndb store
 
-        # for now, route to all users
-        self.redirect("/users")
+        # for now, route to sign in page
+        self.redirect("/signIn")
 
 # for debugging purposes only
 class UserHandler(webapp2.RequestHandler):
@@ -155,6 +155,8 @@ class Worker(webapp2.RequestHandler):
         e.manager = memcache.get(key='user')  # set manager to current logged
         #in user
         e.put()
+        #e_dict = e.to_dict()
+        #e_dict['self'] = e.key.urlsafe()
         #name = self.request.get("name")
         # = self.request.get("email")
         #manager = 44
@@ -162,6 +164,7 @@ class Worker(webapp2.RequestHandler):
         #new_worker = Worker(name=name, email=email)
         #new_worker.put() # put it into the ndb store
         self.redirect("/user/" + memcache.get(key='user') )
+        # fix above. if 'user is empty', redirect to '/'
 
 
 #   FOR DEBUGGING ONLY
@@ -180,7 +183,9 @@ class Logout(webapp2.RequestHandler):
         # redirect user to the home page
         self.redirect("/")
 
-
+class DeleteHandler(webapp2.RequestHandler):
+    def post(self, id=None):
+        self.response.write(self.request.get("email"))
 
 app = webapp2.WSGIApplication([
 
@@ -191,6 +196,7 @@ app = webapp2.WSGIApplication([
     ('/user/(.*)', UserHandler2),
     ('/workers', Workers),
     ('/worker', Worker),
-    ('/logout', Logout)
+    ('/logout', Logout),
+    ('/delete/(.*)', DeleteHandler)
 
 ], debug=True)

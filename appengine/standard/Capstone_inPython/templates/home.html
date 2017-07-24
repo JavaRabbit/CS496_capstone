@@ -52,7 +52,7 @@
       <th>Name</th>
       <th>email</th>
       <th>Manager</th>
-
+      <th>Delete</th>
     </tr>
   </thead>
   <tbody>
@@ -61,6 +61,11 @@
       <td class="property-value-col">{{ employee.name }}</td>
       <td class="property-value-col">{{ employee.email }}</td>
       <td class="property-value-col">{{ employee.manager }}</td>
+      <td class="property-value-col">
+        <form action="/delete/?email={{employee.email}}" method="post">
+          <button type="submit" name="your_name" value="foobar" class="btn-link">Delete</button>
+        </form>
+      </td>
     {% endfor %}
   </tbody>
 </table>
