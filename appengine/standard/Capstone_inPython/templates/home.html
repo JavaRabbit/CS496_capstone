@@ -44,7 +44,7 @@
    <br>
    <h2>List of All Employees</h2>
    <table style="table-layout: fixed;
-  width: 80%;
+  width: 90%;
   border-collapse: collapse;
   border: 3px solid purple;">
   <thead>
@@ -53,6 +53,7 @@
       <th>email</th>
       <th>Manager</th>
       <th>Delete</th>
+      <th>Email Award</th>
     </tr>
   </thead>
   <tbody>
@@ -66,13 +67,14 @@
           <button type="submit" name="your_name" value="foobar" class="btn-link">Delete</button>
         </form>
       </td>
+      <td class="property-value-col"><a href="/award?recip={{employee.name}}?email={{employee.email}}">Create Award</a></td>
     {% endfor %}
   </tbody>
 </table>
 
 
   <br><br>
-  <a href="/logout"><type="button"  class="btn btn-primary">Logout</button></a>
+  <a href="/"><type="button"  class="btn btn-primary">Logout</button></a>
 
 
 

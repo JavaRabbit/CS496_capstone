@@ -33,6 +33,12 @@ class User(ndb.Model):
     email = ndb.StringProperty()
     signature = ndb.IntegerProperty()
 
+class Award(ndb.Model):
+    recipient = ndb.StringProperty(required=True)
+    manager = ndb.StringProperty()
+    type = ndb.StringProperty(required=True)
+    manager = ndb.DateProperty()
+
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -74,6 +80,7 @@ class UserHandler(webapp2.RequestHandler):
 
 class UserHandler2(webapp2.RequestHandler):
     # user has signed in, and is a confirmed user
+    # this will route to home.html view
     def get(self, username=None):
         if username:
             # set the user to username
@@ -193,6 +200,26 @@ class DeleteHandler(webapp2.RequestHandler):
         # go back to users home page
         self.redirect("/user/" + memcache.get(key='user') )
 
+class Awards(webapp2.RequestHandler):
+    def get(self, id=None):
+        get_user_query_results = [get_user_query.to_dict()
+                                      for get_user_query in Award.query()]
+        self.response.write(json.dumps(get_user_query_results))  # display results to user
+
+class Award(webapp2.RequestHandler):
+    def get(self, id=None):
+
+        # get value from the paramters
+        recip= self.request.get("recip")
+        email = self.request.get("email")
+
+        # put values into a dictionary so view can use them
+        template_vars = { "recip" : recip, "email" : email , "current_user" : memcache.get(key='user')}
+
+        template = JINJA_ENV.get_template('createAward.html')
+        self.response.out.write(template.render(template_vars))
+
+
 app = webapp2.WSGIApplication([
 
     ('/', MainPage),
@@ -203,6 +230,8 @@ app = webapp2.WSGIApplication([
     ('/workers', Workers),
     ('/worker', Worker),
     ('/logout', Logout),
-    ('/delete/(.*)', DeleteHandler)
+    ('/delete/(.*)', DeleteHandler),
+    ('/awards', Awards),
+    ('/award', Award)
 
 ], debug=True)

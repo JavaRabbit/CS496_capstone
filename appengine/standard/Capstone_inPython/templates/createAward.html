@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  <script src="bootstrap/js/jquery.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Create a New Award</a>
+      </div>
+
+    </div>
+  </nav>
+
+  <form action="/someeventual endpoint" method="post">
+          Recipient Name:<br>
+          <input type="text" name="username" value={{recip}}>
+          <br>
+          Recipient Email:<br>
+          <input type="text" name="realname" value={{email}} >
+          <br>
+
+        <div><input type="submit" class="btn btn-large btn-primary" value="Email Award"></div>
+  </form>
+  <br><br>
+  <!-- Link to allow user to go back to home page -->
+  <a href="/user/{{current_user}}"><type="button"  class="btn btn-primary">Go Back</button></a>
+
+</body>
+</html>
