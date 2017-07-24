@@ -31,7 +31,7 @@
    </p>
 
    <h2>Create a New Employee</h2>
-   <form action="/employee" method="post">
+   <form action="/worker" method="post">
            Name:<br>
            <input type="text" name="name" >
            <br>
@@ -40,6 +40,32 @@
            <br><br>
          <div><input type="submit" class="btn btn-large btn-primary" value="Create new Employee"></div>
    </form>
+
+   <br>
+   <h2>List of All Employees</h2>
+   <table >
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>email</th>
+      <th>Manager</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for employee in allMM %}
+    <tr>
+      <td class="property-value-col">{{ employee.name }}</td>
+      <td class="property-value-col">{{ employee.email }}</td>
+      <td class="property-value-col">{{ employee.manager }}</td>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+   <a href="/logout"><type="button"  class="btn btn-primary">Logout</button></a>
+
 
 
 

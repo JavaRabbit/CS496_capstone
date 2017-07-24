@@ -1,16 +1,30 @@
 from google.appengine.ext import ndb
-#from google.appengine.api import users
 from google.appengine.api import memcache
 import webapp2
 import json
 import os
 import jinja2
 import smtplib
+import cgi
+import textwrap
+import urllib
 
 
 
 JINJA_ENV = jinja2.Environment(
  loader = jinja2.FileSystemLoader(os.path.dirname(__file__) + "/templates"))
+
+class MM(ndb.Model):
+     name = ndb.StringProperty(required = True)
+     email = ndb.StringProperty()
+     manager = ndb.IntegerProperty()
+
+
+class Worker(ndb.Model):
+     name = ndb.StringProperty(required = True)
+     email = ndb.StringProperty()
+     manager = ndb.IntegerProperty()
+
 
 class User(ndb.Model):
     name = ndb.StringProperty(required=True)
@@ -18,29 +32,6 @@ class User(ndb.Model):
     password = ndb.StringProperty(required=True)
     email = ndb.StringProperty()
     signature = ndb.IntegerProperty()
-
-
-class Employee(ndb.Model):
-    name = ndb.StringProperty(required = True)
-    email = ndb.StringProperty(required = True)
-    manager = ndb.IntegerProperty()
-
-
-'''
-
-class Slip(ndb.Model):
-    number = ndb.IntegerProperty(required=True)
-    #current_boat = ndb.StructuredProperty(Boat)
-    current_boat = ndb.StringProperty()
-    arrival_date = ndb.StringProperty()
-
-
-class Fish(ndb.Model):
-    name = ndb.StringProperty(required=True)
-    numFriends = ndb.IntegerProperty()
-
-
-'''
 
 
 class MainPage(webapp2.RequestHandler):
@@ -122,6 +113,10 @@ class UserHandler2(webapp2.RequestHandler):
 
             template_vars['emailResult'] = emailResult
 
+            get_user_query_results = [get_user_query.to_dict()
+                                          for get_user_query in MM.query()]
+
+            template_vars['allMM'] = get_user_query_results
 
 
             template = JINJA_ENV.get_template('home.html')
@@ -152,29 +147,50 @@ class SignIn(webapp2.RequestHandler):
 
         #self.redirect("/users")
 
-class Employee(webapp2.RequestHandler):
+class Worker(webapp2.RequestHandler):
     def post(self):
-        e = Employee()
+        e = MM()
         e.name = self.request.get("name")
         e.email = self.request.get("email")
+        e.manager = memcache.get(key='user')  # set manager to current logged
+        #in user
+        e.put()
+        #name = self.request.get("name")
+        # = self.request.get("email")
         #manager = 44
         #e.manager = user.get_current_user() # from current user session
-        # = Employee(name=name, email = email)
-        #e.put() # put it into the ndb store
+        #new_worker = Worker(name=name, email=email)
+        #new_worker.put() # put it into the ndb store
         self.redirect("/user/" + memcache.get(key='user') )
+
+
+#   FOR DEBUGGING ONLY
+class Workers(webapp2.RequestHandler):
+    def get(self,id=None):
+        #get_user_query_results = [get_user_query.to_dict() for get_user_query in Worker.query()]
+        get_user_query_results = [get_user_query.to_dict()
+                                      for get_user_query in MM.query()]
+        self.response.write(json.dumps(get_user_query_results))  # display results to user
+
+
+class Logout(webapp2.RequestHandler):
+    def get(self):
+        # to logout, clear the memcache which stored the user
+        memcache.flush_all()
+        # redirect user to the home page
+        self.redirect("/")
 
 
 
 app = webapp2.WSGIApplication([
-
-    #('/fish', FishHandler),
-    #('/fish/(.*)', FishHandler),
 
     ('/', MainPage),
     ('/createUser', CreateUser),
     ('/signIn', SignIn),
     ('/users', UserHandler),
     ('/user/(.*)', UserHandler2),
-    ('/employee', Employee)
+    ('/workers', Workers),
+    ('/worker', Worker),
+    ('/logout', Logout)
 
 ], debug=True)
