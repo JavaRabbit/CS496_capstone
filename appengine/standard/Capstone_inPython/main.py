@@ -105,7 +105,7 @@ class UserHandler2(webapp2.RequestHandler):
                 FROM = "kbonnie@gmail.com"
                 TO = ['kbonnie@gmail.com'] # must be list
                 SUBJECT = "HELLO FROM APP"
-                TEXT = "Need to feed the cat"
+                TEXT = "This is the capstone application. This award PDF for Employee of the Month"
                 username = "kbonnie@gmail.com"
                 password = ''   ### always remove the password ############################
                 server = smtplib.SMTP('smtp.gmail.com:587')
@@ -120,8 +120,9 @@ class UserHandler2(webapp2.RequestHandler):
 
             template_vars['emailResult'] = emailResult
 
+            # Query the database for all 'employees' whose manager is current loggedin user
             get_user_query_results = [get_user_query.to_dict()
-                                          for get_user_query in MM.query()]
+                                          for get_user_query in MM.query(MM.manager == memcache.get(key='user'))]
 
             template_vars['allMM'] = get_user_query_results
 
