@@ -214,8 +214,13 @@ class Award(webapp2.RequestHandler):
         recip= self.request.get("recip")
         email = self.request.get("email")
 
+
+        # get the users email address
+        query = User.query(User.username == memcache.get(key='user')).get()
+        q_d = query.to_dict()
+
         # put values into a dictionary so view can use them
-        template_vars = { "recip" : recip, "email" : email , "current_user" : memcache.get(key='user')}
+        template_vars = { "recip" : recip, "email" : email , "current_user" : memcache.get(key='user'), "sender_email" : q_d['email']}
 
         template = JINJA_ENV.get_template('createAward.html')
         self.response.out.write(template.render(template_vars))
