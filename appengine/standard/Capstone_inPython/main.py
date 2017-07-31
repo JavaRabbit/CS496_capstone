@@ -19,7 +19,8 @@ class MM(ndb.Model):
      email = ndb.StringProperty()
      manager = ndb.StringProperty()
 
-
+# actually not using this class.
+# employee is actually MM
 class Worker(ndb.Model):
      name = ndb.StringProperty(required = True)
      email = ndb.StringProperty()
@@ -33,11 +34,20 @@ class User(ndb.Model):
     email = ndb.StringProperty()
     signature = ndb.IntegerProperty()
 
+# not using award since it wouldn't query
 class Award(ndb.Model):
     recipient = ndb.StringProperty(required=True)
     manager = ndb.StringProperty()
     type = ndb.StringProperty(required=True)
-    manager = ndb.DateProperty()
+    date = ndb.DateProperty()
+
+
+
+class Award2(ndb.Model):
+    recipient = ndb.StringProperty(required=True)
+    manager = ndb.StringProperty()
+    type = ndb.StringProperty(required=True)
+    date = ndb.DateProperty()
 
 
 class MainPage(webapp2.RequestHandler):
@@ -201,10 +211,11 @@ class DeleteHandler(webapp2.RequestHandler):
         # go back to users home page
         self.redirect("/user/" + memcache.get(key='user') )
 
+# Award is now Award2
 class Awards(webapp2.RequestHandler):
     def get(self, id=None):
         get_user_query_results = [get_user_query.to_dict()
-                                      for get_user_query in Award.query()]
+                                      for get_user_query in Award2.query()]
         self.response.write(json.dumps(get_user_query_results))  # display results to user
 
 class Award(webapp2.RequestHandler):
@@ -224,6 +235,41 @@ class Award(webapp2.RequestHandler):
 
         template = JINJA_ENV.get_template('createAward.html')
         self.response.out.write(template.render(template_vars))
+
+
+    #  post method to create award
+    def post(self, id=None):
+
+        # create a new Award2
+        e = Award2()
+        e.recipient = self.request.get("recipname")
+        e.type = self.request.get("type")
+        e.date = None
+        e.manager = memcache.get(key='user')  # set manager to current logged
+        #in user
+        e.put()
+
+        emailResult = ""
+        try:
+            # test sending out email
+            FROM = self.request.get("manageremail")
+            TO = self.request.get("recipemail") # must be list
+            SUBJECT = "HELLO FROM APP"
+            TEXT = "This is the capstone application. This award PDF for Employee of the Month"
+            username = self.request.get("manageremail")
+            password = self.request.get("managerpassword")   ### always remove the password ############################
+            server = smtplib.SMTP('smtp.gmail.com:587')
+            server.ehlo()
+            server.starttls()
+            server.login(username,password)
+            server.sendmail(FROM, TO, TEXT)
+            server.quit()
+            emailResult = "success"
+        except Exception, e:
+            emailResult = "failed to email"
+        # go back to users home page
+        self.redirect("/user/" + memcache.get(key='user') )
+
 
 
 app = webapp2.WSGIApplication([

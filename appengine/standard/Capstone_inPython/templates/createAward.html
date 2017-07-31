@@ -21,19 +21,22 @@
     </div>
   </nav>
 
-  <form action="/someeventual endpoint" method="post">
+  <form action="/award" method="post">
           Recipient Name:<br>
-          <input type="text" name="username" value={{recip}}>
+          <input type="text" name="recipname" value={{recip}}>
           <br>
           Recipient Email:<br>
-          <input type="text" name="realname" value={{email}} >
-          <br>
+          <input type="text" name="recipemail" value={{email}} >
+          <br><br>
+          Award Type:<br>
+          <input type="text" name="type" value={{email}} >
+          <br><br>
 
           Senders Email Address:<br>
-          <input type="text" name="username" value={{sender_email}} }>
+          <input type="text" name="manageremail" value={{sender_email}} }>
           <br>
           Sender Email Address Password:<br>
-          <input type="text" name="realname"  >
+          <input type="text" name="managerpassword"  >
           <br>
 
         <div><input type="submit" class="btn btn-large btn-primary" value="Email Award"></div>
