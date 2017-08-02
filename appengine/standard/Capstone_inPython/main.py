@@ -9,6 +9,10 @@ import cgi
 import textwrap
 import urllib
 
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.MIMEImage import MIMEImage
+
 
 
 JINJA_ENV = jinja2.Environment(
@@ -81,14 +85,27 @@ class CreateUser(webapp2.RequestHandler):
 # for debugging purposes only
 class UserHandler(webapp2.RequestHandler):
     def get(self, id=None):
-        #r get all users
+        # get all users
         get_user_query_results = [get_user_query.to_dict()
                                       for get_user_query in User.query()]
         self.response.write(json.dumps(get_user_query_results))  # display results to user
 
 
-
 class UserHandler2(webapp2.RequestHandler):
+
+    def delete(self, id=None):
+        if id:
+            try:
+                query = User.query(User.username == id).get()
+
+                query.key.delete()
+                self.response.write("User deleted sucessfully.")
+
+            except Exception, e:
+                self.response.write("Invalid User username")
+        else:
+            self.response.write("You cannot delete a User with no id")
+
     # user has signed in, and is a confirmed user
     # this will route to home.html view
     def get(self, username=None):
@@ -139,6 +156,10 @@ class UserHandler2(webapp2.RequestHandler):
 
             template = JINJA_ENV.get_template('home.html')
             self.response.out.write(template.render(template_vars))
+
+
+
+
 
 class SignIn(webapp2.RequestHandler):
     def get(self):
@@ -218,6 +239,8 @@ class Awards(webapp2.RequestHandler):
                                       for get_user_query in Award2.query()]
         self.response.write(json.dumps(get_user_query_results))  # display results to user
 
+
+
 class Award(webapp2.RequestHandler):
     def get(self, id=None):
 
@@ -251,22 +274,45 @@ class Award(webapp2.RequestHandler):
 
         emailResult = ""
         try:
+
             # test sending out email
             FROM = self.request.get("manageremail")
             TO = self.request.get("recipemail") # must be list
-            SUBJECT = "HELLO FROM APP"
-            TEXT = "This is the capstone application. This award PDF for Employee of the Month"
+            # SUBJECT = "Congratulations on Your Award"
+            #TEXT = "This is the capstone application. This award PDF for Employee of the Month"
+
+            # This works, but ends up as gibberish
+            msg = MIMEMultipart()
+
+            # Add the email subject line
+            msg['Subject'] = "Congratulations on Your Award"
+            msg['Text'] = "This award PDF for Employee of the Month"
+            msg.attach(MIMEText(file("EmployeeOfTheMonth.pdf").read()))
+
+            '''
+            f = "EmployeeOfTheMonth.pdf"
+            with open(f, encoding = 'utf-8', errors = 'replace') as opened:
+                openedfile = opened.read()
+            attachedfile = MIMEApplication(openedfile, _subtype = "pdf", _encoder = encode_base64)
+            attachedfile.add_header('content-disposition', 'attachment', filename = "EmployeeOfTheMonth.pdf")
+            msg.attach(attachedfile)
+
+            '''
             username = self.request.get("manageremail")
             password = self.request.get("managerpassword")   ### always remove the password ############################
             server = smtplib.SMTP('smtp.gmail.com:587')
             server.ehlo()
+
             server.starttls()
             server.login(username,password)
-            server.sendmail(FROM, TO, TEXT)
+            server.sendmail(FROM, TO, msg.as_string()) #TEXT
             server.quit()
             emailResult = "success"
+
+
         except Exception, e:
             emailResult = "failed to email"
+            self.redirect("/" )
         # go back to users home page
         self.redirect("/user/" + memcache.get(key='user') )
 
