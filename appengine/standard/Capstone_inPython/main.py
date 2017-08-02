@@ -114,8 +114,6 @@ class UserHandler2(webapp2.RequestHandler):
             #user = users.User(username)
 
             # set the memcache user to username
-
-
             query = User.query(User.username == username).get()
             q_d = query.to_dict()
             #self.response.write(json.dumps(q_d))
@@ -126,26 +124,6 @@ class UserHandler2(webapp2.RequestHandler):
             "user" :  memcache.get(key='user')
             }
 
-            emailResult = ""
-            try:
-                # test sending out email
-                FROM = "kbonnie@gmail.com"
-                TO = ['kbonnie@gmail.com'] # must be list
-                SUBJECT = "HELLO FROM APP"
-                TEXT = "This is the capstone application. This award PDF for Employee of the Month"
-                username = "kbonnie@gmail.com"
-                password = ''   ### always remove the password ############################
-                server = smtplib.SMTP('smtp.gmail.com:587')
-                server.ehlo()
-                server.starttls()
-                server.login(username,password)
-                server.sendmail(FROM, TO, TEXT)
-                server.quit()
-                emailResult = "success"
-            except Exception, e:
-                emailResult = "failed to email"
-
-            template_vars['emailResult'] = emailResult
 
             # Query the database for all 'employees' whose manager is current loggedin user
             get_user_query_results = [get_user_query.to_dict()
@@ -156,9 +134,6 @@ class UserHandler2(webapp2.RequestHandler):
 
             template = JINJA_ENV.get_template('home.html')
             self.response.out.write(template.render(template_vars))
-
-
-
 
 
 class SignIn(webapp2.RequestHandler):
@@ -194,14 +169,7 @@ class Worker(webapp2.RequestHandler):
         e.manager = memcache.get(key='user')  # set manager to current logged
         #in user
         e.put()
-        #e_dict = e.to_dict()
-        #e_dict['self'] = e.key.urlsafe()
-        #name = self.request.get("name")
-        # = self.request.get("email")
-        #manager = 44
-        #e.manager = user.get_current_user() # from current user session
-        #new_worker = Worker(name=name, email=email)
-        #new_worker.put() # put it into the ndb store
+
         self.redirect("/user/" + memcache.get(key='user') )
         # fix above. if 'user is empty', redirect to '/'
 
@@ -227,8 +195,7 @@ class DeleteHandler(webapp2.RequestHandler):
         query = MM.query(MM.email == self.request.get("email")).fetch()
         for person in query:
             person.key.delete()
-        #self.response.write(self.request.get("email"))
-        #self.response.write("deleted??")
+
         # go back to users home page
         self.redirect("/user/" + memcache.get(key='user') )
 
