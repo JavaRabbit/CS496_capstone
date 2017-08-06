@@ -12,6 +12,7 @@ import urllib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
+from email.mime.application import MIMEApplication
 
 
 
@@ -254,23 +255,21 @@ class Award(webapp2.RequestHandler):
             # Add the email subject line
             msg['Subject'] = "Congratulations on Your Award"
             msg['Text'] = "This award PDF for Employee of the Month"
-            msg.attach(MIMEText(file("EmployeeOfTheMonth.pdf").read()))
 
-            '''
-            f = "EmployeeOfTheMonth.pdf"
-            with open(f, encoding = 'utf-8', errors = 'replace') as opened:
-                openedfile = opened.read()
-            attachedfile = MIMEApplication(openedfile, _subtype = "pdf", _encoder = encode_base64)
-            attachedfile.add_header('content-disposition', 'attachment', filename = "EmployeeOfTheMonth.pdf")
-            msg.attach(attachedfile)
+            cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
+            cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
+            msg.attach(cover_letter)
 
-            '''
+            #msg.attach(MIMEText(file("EmployeeOfTheMonth.pdf").read()))
+
+
             username = self.request.get("manageremail")
             password = self.request.get("managerpassword")   ### always remove the password ############################
             server = smtplib.SMTP('smtp.gmail.com:587')
-            server.ehlo()
+
 
             server.starttls()
+            server.ehlo()
             server.login(username,password)
             server.sendmail(FROM, TO, msg.as_string()) #TEXT
             server.quit()
