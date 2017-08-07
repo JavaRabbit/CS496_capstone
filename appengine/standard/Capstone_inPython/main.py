@@ -336,9 +336,15 @@ class AdminPage(webapp2.RequestHandler):
     def get(self):
         # check if admin is logged in, otherwise notify user and
         # redirect to admin login
+        # get all users
+        get_user_query_results = [get_user_query.to_dict()
+                                      for get_user_query in User.query()]
+
+        template_vars = {}
+        template_vars['allUsers'] = get_user_query_results
 
         template = JINJA_ENV.get_template('adminPage.html')
-        self.response.out.write(template.render())
+        self.response.out.write(template.render(template_vars))
 
 
 app = webapp2.WSGIApplication([
