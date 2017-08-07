@@ -317,6 +317,30 @@ class Award(webapp2.RequestHandler):
 
 
 
+
+class Admin(webapp2.RequestHandler):
+    def get(self):
+        template = JINJA_ENV.get_template('adminLogin.html')
+        self.response.out.write(template.render())
+
+    def post(self):
+        if self.request.get("username") == "cat" and self.request.get("password")=="fish":
+            # set memcache to admin Logged in = true
+            self.redirect("/adminPage")
+
+        else:
+            # notify user that password was wrong
+            self.redirect("/admin")
+
+class AdminPage(webapp2.RequestHandler):
+    def get(self):
+        # check if admin is logged in, otherwise notify user and
+        # redirect to admin login
+
+        template = JINJA_ENV.get_template('adminPage.html')
+        self.response.out.write(template.render())
+
+
 app = webapp2.WSGIApplication([
 
     ('/', MainPage),
@@ -330,6 +354,8 @@ app = webapp2.WSGIApplication([
     ('/delete/(.*)', DeleteHandler),
     ('/awards', Awards),
     ('/award', Award),
-    ('/myaccount', MyAccount)
+    ('/myaccount', MyAccount),
+    ('/admin', Admin),
+    ('/adminPage', AdminPage)
 
 ], debug=True)

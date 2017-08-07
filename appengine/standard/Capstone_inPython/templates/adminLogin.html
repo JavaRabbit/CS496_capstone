@@ -15,16 +15,22 @@
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Employee Awards</a>
+        <a class="navbar-brand" href="#">Employee Awards - Admin Login</a>
       </div>
 
     </div>
   </nav>
 
-   <a href="/signIn"><type="button"  class="btn btn-primary">Sign In</button></a>
-   <a href="/createUser"><button type="button" class="btn btn-primary">Create Account</button></a>
-   <a href="/admin"><button type="button" class="btn btn-primary">Admin Login</button></a>
+  <form action="/admin" method="post">
+          Username:<br>
+          <input type="text" name="username" >
+          <br>
+          Password:<br>
+          <input type="text" name="password">
+          <br><br>
 
+        <div><input type="submit" class="btn btn-large btn-primary" value="Log In"></div>
+  </form>
 
 
 
