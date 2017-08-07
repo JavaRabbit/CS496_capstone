@@ -133,9 +133,43 @@ class UserHandler2(webapp2.RequestHandler):
             template_vars['allMM'] = get_user_query_results
 
 
+            # Query the database for all 'awards' whose manager is current logged in user
+            award_results = [get_user_query.to_dict()
+                                          for get_user_query in Award2.query(Award2.manager == memcache.get(key='user'))]
+
+            template_vars['allAwards'] = award_results
+
+
             template = JINJA_ENV.get_template('home.html')
             self.response.out.write(template.render(template_vars))
 
+class MyAccount(webapp2.RequestHandler):
+    def get(self, id=None):
+        template_vars = {
+
+        "user" :  memcache.get(key='user')
+        }
+
+        query = User.query(User.username == memcache.get(key='user')).get()
+        q_d = query.to_dict()
+        template_vars['stuff'] = q_d
+
+        template = JINJA_ENV.get_template('myaccount.html')
+        self.response.out.write(template.render(template_vars))
+
+    # method for updating user account settings
+    # try catch? if exists
+    def post(self, id=None):
+        try:
+            query = User.query(User.username == memcache.get(key='user')).get()
+            query.name = self.request.get("name")
+            query.email = self.request.get("email")
+            query.put()
+
+            # go back to users home page
+            self.redirect("/user/" + memcache.get(key='user') )
+        except Exception, e:
+            self.redirect("/")
 
 class SignIn(webapp2.RequestHandler):
     def get(self):
@@ -262,7 +296,6 @@ class Award(webapp2.RequestHandler):
 
             #msg.attach(MIMEText(file("EmployeeOfTheMonth.pdf").read()))
 
-
             username = self.request.get("manageremail")
             password = self.request.get("managerpassword")   ### always remove the password ############################
             server = smtplib.SMTP('smtp.gmail.com:587')
@@ -296,6 +329,7 @@ app = webapp2.WSGIApplication([
     ('/logout', Logout),
     ('/delete/(.*)', DeleteHandler),
     ('/awards', Awards),
-    ('/award', Award)
+    ('/award', Award),
+    ('/myaccount', MyAccount)
 
 ], debug=True)

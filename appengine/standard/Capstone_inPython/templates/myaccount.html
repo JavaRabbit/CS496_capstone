@@ -1,0 +1,16 @@
+<h2>Welcome, {{user}}</h2>
+<br>
+{{stuff}}
+<h2>Update Profile</h2>
+<form action="/myaccount" method="post">
+        Email:<br>
+        <input type="text" name="email" value={{stuff.email}}>
+        <br>
+        Password:<br>
+        <input type="text" name="password" >
+        <br>
+        Name:<br>
+        <input type="text" name="name" value={{stuff.name}}>
+        <br><br>
+      <div><input type="submit" class="btn btn-large btn-primary" value="Update Profile"></div>
+</form>

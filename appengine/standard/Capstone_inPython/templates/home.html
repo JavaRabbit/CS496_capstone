@@ -73,8 +73,36 @@
 </table>
 
 
+<br>
+<h2>List of All Awards</h2>
+<table style="table-layout: fixed;
+width: 90%;
+border-collapse: collapse;
+border: 3px solid purple;">
+<thead>
+ <tr>
+   <th>Recipient</th>
+   <th>Type</th>
+   <th>Date Awarded</th>
+ </tr>
+</thead>
+<tbody>
+ {% for award in allAwards %}
+ <tr>
+   <td class="property-value-col">{{ award.recipient }}</td>
+   <td class="property-value-col">{{ award.type }}</td>
+   <td class="property-value-col">{{ award.date }}</td>
+
+ {% endfor %}
+</tbody>
+</table>
+
+
   <br><br>
   <a href="/"><type="button"  class="btn btn-primary">Logout</button></a>
+
+  <br><br>
+  <a href="/myaccount"><type="button"  class="btn btn-primary">Edit Profile</button></a>
 
 
 
