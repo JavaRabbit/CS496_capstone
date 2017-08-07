@@ -268,7 +268,7 @@ class Award(webapp2.RequestHandler):
         # create a new Award2
         e = Award2()
         e.recipient = self.request.get("recipname")
-        e.type = self.request.get("type")
+        e.type = self.request.get("awardType")
         e.date = None
         e.manager = memcache.get(key='user')  # set manager to current logged
         #in user
@@ -280,6 +280,7 @@ class Award(webapp2.RequestHandler):
             # test sending out email
             FROM = self.request.get("manageremail")
             TO = self.request.get("recipemail") # must be list
+            aType = self.request.get("awardType") # must be list
             # SUBJECT = "Congratulations on Your Award"
             #TEXT = "This is the capstone application. This award PDF for Employee of the Month"
 
@@ -290,8 +291,13 @@ class Award(webapp2.RequestHandler):
             msg['Subject'] = "Congratulations on Your Award"
             msg['Text'] = "This award PDF for Employee of the Month"
 
-            cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
-            cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
+            #  get the award type from the form
+            if aType == "month":
+                cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
+                cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
+            else:
+                cover_letter = MIMEApplication(open("EmployeeOfTheYear.pdf", "rb").read())
+                cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheYear.pdf")
             msg.attach(cover_letter)
 
             #msg.attach(MIMEText(file("EmployeeOfTheMonth.pdf").read()))
@@ -324,8 +330,9 @@ class Admin(webapp2.RequestHandler):
         self.response.out.write(template.render())
 
     def post(self):
-        if self.request.get("username") == "cat" and self.request.get("password")=="fish":
+        if self.request.get("username") == "admin" and self.request.get("password")=="admin":
             # set memcache to admin Logged in = true
+            memcache.add(key='admin', value = "true")
             self.redirect("/adminPage")
 
         else:
@@ -335,16 +342,21 @@ class Admin(webapp2.RequestHandler):
 class AdminPage(webapp2.RequestHandler):
     def get(self):
         # check if admin is logged in, otherwise notify user and
-        # redirect to admin login
-        # get all users
-        get_user_query_results = [get_user_query.to_dict()
-                                      for get_user_query in User.query()]
+        status = memcache.get('admin')
+        if status is not None:
 
-        template_vars = {}
-        template_vars['allUsers'] = get_user_query_results
+            # redirect to admin login
+            # get all users
+            get_user_query_results = [get_user_query.to_dict()
+                                          for get_user_query in User.query()]
 
-        template = JINJA_ENV.get_template('adminPage.html')
-        self.response.out.write(template.render(template_vars))
+            template_vars = {}
+            template_vars['allUsers'] = get_user_query_results
+
+            template = JINJA_ENV.get_template('adminPage.html')
+            self.response.out.write(template.render(template_vars))
+        else:
+            self.redirect("/admin")
 
 
 app = webapp2.WSGIApplication([
