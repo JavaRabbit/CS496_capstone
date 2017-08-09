@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
+from google.appengine.api import app_identity
 import webapp2
 import json
 import os
@@ -8,6 +9,10 @@ import smtplib
 import cgi
 import textwrap
 import urllib
+import cloudstorage as gcs
+import logging
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
 
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
@@ -53,7 +58,10 @@ class Award2(ndb.Model):
     manager = ndb.StringProperty()
     type = ndb.StringProperty(required=True)
     date = ndb.DateProperty()
+    akey = ndb.KeyProperty()
 
+class PDF(ndb.Model):
+    content = ndb.BlobProperty(indexed=False)
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -291,8 +299,16 @@ class Award(webapp2.RequestHandler):
             msg['Subject'] = "Congratulations on Your Award"
             msg['Text'] = "This award PDF for Employee of the Month"
 
+            thePDF = PDF()
+            c = canvas.Canvas("hello.pdf")
+            c.drawString(100,750,"Welcome to Reportlab!")
+            thePDF.content = c  # just don't save it
+            thePDF.put()
+
             #  get the award type from the form
             if aType == "month":
+                #cover_letter = MIMEApplication(open("hello.pdf", "rb").read())
+                #cover_letter.add_header('Content-Disposition', 'attachment', filename="hello.pdf")
                 cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
                 cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
             else:
@@ -305,7 +321,6 @@ class Award(webapp2.RequestHandler):
             username = self.request.get("manageremail")
             password = self.request.get("managerpassword")   ### always remove the password ############################
             server = smtplib.SMTP('smtp.gmail.com:587')
-
 
             server.starttls()
             server.ehlo()
@@ -321,8 +336,9 @@ class Award(webapp2.RequestHandler):
         # go back to users home page
         self.redirect("/user/" + memcache.get(key='user') )
 
-
-
+class AwardDelete(webapp2.RequestHandler):
+    def post(self, award=None):
+        self.redirect("http://www.google.com")
 
 class Admin(webapp2.RequestHandler):
     def get(self):
@@ -358,6 +374,15 @@ class AdminPage(webapp2.RequestHandler):
         else:
             self.redirect("/admin")
 
+class PDF(webapp2.RequestHandler):
+    def get(self):
+        try:
+            self.response.headers['Content-Type'] = 'text/plain'
+            self.response.write(app_identity.get_default_gcs_bucket_name())
+        except Exception, e:
+
+            self.redirect("www.google.com" )
+
 
 app = webapp2.WSGIApplication([
 
@@ -370,10 +395,12 @@ app = webapp2.WSGIApplication([
     ('/worker', Worker),
     ('/logout', Logout),
     ('/delete/(.*)', DeleteHandler),
+    ('/deleteAward/(.*)', AwardDelete),
     ('/awards', Awards),
     ('/award', Award),
     ('/myaccount', MyAccount),
     ('/admin', Admin),
-    ('/adminPage', AdminPage)
+    ('/adminPage', AdminPage),
+    ('/createPDF', PDF)
 
 ], debug=True)

@@ -7,6 +7,8 @@ handlers:
   static_dir: stylesheets
 - url: /bootstrap
   static_dir: bootstrap
+- url: /blobstore.*
+  script: blobstore.app
 
 - url: /.*
   script: main.app
