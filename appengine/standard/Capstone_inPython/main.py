@@ -51,17 +51,12 @@ class Award(ndb.Model):
     type = ndb.StringProperty(required=True)
     date = ndb.DateProperty()
 
-
-
 class Award2(ndb.Model):
     recipient = ndb.StringProperty(required=True)
     manager = ndb.StringProperty()
     type = ndb.StringProperty(required=True)
     date = ndb.DateProperty()
-    akey = ndb.KeyProperty()
 
-class PDF(ndb.Model):
-    content = ndb.BlobProperty(indexed=False)
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -299,11 +294,10 @@ class Award(webapp2.RequestHandler):
             msg['Subject'] = "Congratulations on Your Award"
             msg['Text'] = "This award PDF for Employee of the Month"
 
-            thePDF = PDF()
+
             c = canvas.Canvas("hello.pdf")
             c.drawString(100,750,"Welcome to Reportlab!")
-            thePDF.content = c  # just don't save it
-            thePDF.put()
+
 
             #  get the award type from the form
             if aType == "month":
@@ -374,9 +368,22 @@ class AdminPage(webapp2.RequestHandler):
         else:
             self.redirect("/admin")
 
+class UserDelete(webapp2.RequestHandler):
+
+    def post(self, id=None):
+        query = User.query(User.email == self.request.get("email")).fetch()
+        for person in query:
+            person.key.delete()
+
+        # go back to admin home page
+        self.redirect("/admin" )
+
+
 class PDF(webapp2.RequestHandler):
     def get(self):
         try:
+
+
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write(app_identity.get_default_gcs_bucket_name())
         except Exception, e:
@@ -396,6 +403,7 @@ app = webapp2.WSGIApplication([
     ('/logout', Logout),
     ('/delete/(.*)', DeleteHandler),
     ('/deleteAward/(.*)', AwardDelete),
+    ('/deleteUser/(.*)', UserDelete),
     ('/awards', Awards),
     ('/award', Award),
     ('/myaccount', MyAccount),

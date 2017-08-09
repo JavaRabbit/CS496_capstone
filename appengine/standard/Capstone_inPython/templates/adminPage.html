@@ -35,6 +35,7 @@ border: 3px solid purple;">
   <th>name</th>
   <th>User name</th>
   <th>Email</th>
+  <th>Delete</th>
 </tr>
 </thead>
 <tbody>
@@ -43,7 +44,11 @@ border: 3px solid purple;">
   <td class="property-value-col">{{ user.name }}</td>
   <td class="property-value-col">{{ user.username }}</td>
   <td class="property-value-col">{{ user.email }}</td>
-
+  <td class="property-value-col">
+    <form action="/deleteUser/?email={{user.email}}" method="post">
+      <button type="submit"  class="btn-link">Delete</button>
+    </form>
+  </td>
 {% endfor %}
 </tbody>
 </table>
