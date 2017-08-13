@@ -9,6 +9,8 @@ handlers:
   static_dir: bootstrap
 - url: /blobstore.*
   script: blobstore.app
+- url: /assets
+  static_dir: templates/assets
 
 - url: /.*
   script: main.app
