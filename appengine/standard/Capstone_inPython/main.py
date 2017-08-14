@@ -73,7 +73,7 @@ class MainPage(webapp2.RequestHandler):
 class CreateUser(webapp2.RequestHandler):
     def get(self):
         # set the view to be index.html found in folder templates
-        template = JINJA_ENV.get_template('createUser.html')
+        template = JINJA_ENV.get_template('createUser_new.html')
         # controller tells to render the index.html template
         self.response.out.write(template.render())
 
