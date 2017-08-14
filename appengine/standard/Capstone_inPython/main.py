@@ -374,7 +374,7 @@ class AdminPage(webapp2.RequestHandler):
             template_vars = {}
             template_vars['allUsers'] = get_user_query_results
 
-            template = JINJA_ENV.get_template('adminPage.html')
+            template = JINJA_ENV.get_template('adminPage_new.html')
             self.response.out.write(template.render(template_vars))
         else:
             self.redirect("/admin")
