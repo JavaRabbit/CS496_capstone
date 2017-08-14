@@ -146,7 +146,7 @@ class UserHandler2(webapp2.RequestHandler):
             template_vars['allAwards'] = award_results
 
 
-            template = JINJA_ENV.get_template('home.html')
+            template = JINJA_ENV.get_template('home_new.html')
             self.response.out.write(template.render(template_vars))
 
 class MyAccount(webapp2.RequestHandler):

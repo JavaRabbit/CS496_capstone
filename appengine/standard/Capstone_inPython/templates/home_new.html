@@ -37,13 +37,19 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#manageEmployees">Manage Employees</a>
+            <a class="nav-link" href="#addEmployee">Add Employee</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#contact">Statistics</a>
+            <a class="nav-link" href="#about">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Admin Log Out</a>
+            <a class="nav-link" href="#team">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">Admin Log In</a>
           </li>
         </ul>
       </div>
@@ -54,50 +60,137 @@
       <div class="container">
         <div class="intro-text">
           <div class="intro-lead-in">Employee Awards Come Together</div>
-          <div class="intro-heading">Admin Management</div>
+          <div class="intro-heading">Welcome, {{name}}</div>
+
         </div>
       </div>
     </header>
 
     <!-- Services -->
-    <section id="services">
+    <section id="addEmployee">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 text-center">
-            <h2 class="section-heading">Services</h2>
-            <h3 class="section-subheading text-muted">Employee Award and Recognition All Managed in One Place</h3>
+            <h2 class="section-heading">Add a new employee</h2>
+            <!--<h3 class="section-subheading text-muted">Add an Employee</h3>  -->
           </div>
         </div>
         <div class="row text-center">
-          <div class="col-md-4">
-            <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-shopping-cart fa-stack-1x fa-inverse"></i>
-            </span>
-            <h4 class="service-heading">Streamlined Delivery</h4>
-            <p class="text-muted">Delivery and track awards from one place. Send awards easily from one simple form.</p>
-          </div>
-          <div class="col-md-4">
-            <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-laptop fa-stack-1x fa-inverse"></i>
-            </span>
-            <h4 class="service-heading">Scalable</h4>
-            <p class="text-muted">Whether you're managing a team of one or a team of thousands, we provide a tool that manages everyone from location.</p>
-          </div>
-          <div class="col-md-4">
-            <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-lock fa-stack-1x fa-inverse"></i>
-            </span>
-            <h4 class="service-heading">Customized</h4>
-            <p class="text-muted">No matter the award type, we provide an easy tool to meet all your award type needs.</p>
-          </div>
+          <h6>
+            You may need to login to your gmail account and then visit <a href="https://myaccount.google.com/lesssecureapps">allow less secure apps to use your Gmail.</a>
+          </h6>
+          <br><br>
+          <h3>Create a New Employee</h3>
+          <form action="/worker" method="post">
+                  Name:<br>
+                  <input type="text" name="name" >
+                  <br>
+                  Email:<br>
+                  <input type="text" name="email" >
+                  <br><br>
+                <div><input type="submit" class="btn btn-large btn-primary" value="Create new Employee"></div>
+          </form>
         </div>
       </div>
     </section>
 
-
+    <!-- Portfolio Grid
+    <section class="bg-light" id="portfolio">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <h2 class="section-heading">Portfolio</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <div class="portfolio-link" data-toggle="modal" href="#portfolioModal1">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="/img/portfolio/01-thumbnail.jpg" alt="">
+            </div>
+            <div class="portfolio-caption">
+              <h4>Threads</h4>
+              <p class="text-muted">Illustration</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <div class="portfolio-link" data-toggle="modal" href="#portfolioModal2">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="/img/portfolio/02-thumbnail.jpg" alt="">
+            </div>
+            <div class="portfolio-caption">
+              <h4>Explore</h4>
+              <p class="text-muted">Graphic Design</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <div class="portfolio-link" data-toggle="modal" href="#portfolioModal3">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="/img/portfolio/03-thumbnail.jpg" alt="">
+            </div>
+            <div class="portfolio-caption">
+              <h4>Finish</h4>
+              <p class="text-muted">Identity</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <div class="portfolio-link" data-toggle="modal" href="#portfolioModal4">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="/img/portfolio/04-thumbnail.jpg" alt="">
+            </div>
+            <div class="portfolio-caption">
+              <h4>Lines</h4>
+              <p class="text-muted">Branding</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <div class="portfolio-link" data-toggle="modal" href="#portfolioModal5">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="/img/portfolio/05-thumbnail.jpg" alt="">
+            </div>
+            <div class="portfolio-caption">
+              <h4>Southwest</h4>
+              <p class="text-muted">Website Design</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <div class="portfolio-link" data-toggle="modal" href="#portfolioModal6">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="/img/portfolio/06-thumbnail.jpg" alt="">
+            </div>
+            <div class="portfolio-caption">
+              <h4>Window</h4>
+              <p class="text-muted">Photography</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> -->
 
     <!-- About -->
     <section id="about">
@@ -181,47 +274,87 @@
     </section>
 
     <!-- Team -->
-    <section class="bg-light" id="manageEmployees">
+    <section class="bg-light" id="team">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 text-center">
-            <h2 class="section-heading">Manage Employees</h2>
+            <h2 class="section-heading">Our Amazing Team</h2>
             <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
           </div>
         </div>
         <div class="row">
-
-            <h2>List of All Users</h2>
-            <table style="table-layout: fixed;
-            width: 90%;
-            border-collapse: collapse;
-            border: 3px solid purple;">
-            <thead>
-            <tr>
-              <th>name</th>
-              <th>User name</th>
-              <th>Email</th>
-              <th>Delete</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in allUsers %}
-            <tr>
-              <td class="property-value-col">{{ user.name }}</td>
-              <td class="property-value-col">{{ user.username }}</td>
-              <td class="property-value-col">{{ user.email }}</td>
-              <td class="property-value-col">
-                <form action="/deleteUser/?email={{user.email}}" method="post">
-                  <button type="submit"  class="btn-link">Delete</button>
-                </form>
-              </td>
-            {% endfor %}
-            </tbody>
-            </table>
-
-            <br><br>
-
-
+        <!--  <div class="col-sm-4">
+            <div class="team-member">
+              <img class="mx-auto rounded-circle" src="/img/team/1.jpg" alt="">
+              <h4>Kay Garland</h4>
+              <p class="text-muted">Lead Designer</p>
+              <ul class="list-inline social-buttons">
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-twitter"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-facebook"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-linkedin"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>-->
+          <div class="col-sm-4">
+            <div class="team-member">
+              <img class="mx-auto rounded-circle" src="/img/team/2.jpg" alt="">
+              <h4>Larry Parker</h4>
+              <p class="text-muted">Lead Marketer</p>
+              <ul class="list-inline social-buttons">
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-twitter"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-facebook"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-linkedin"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="team-member">
+              <img class="mx-auto rounded-circle" src="/img/team/3.jpg" alt="">
+              <h4>Diana Pertersen</h4>
+              <p class="text-muted">Lead Developer</p>
+              <ul class="list-inline social-buttons">
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-twitter"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-facebook"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <a href="#">
+                    <i class="fa fa-linkedin"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
         <div class="row">
           <div class="col-lg-8 mx-auto text-center">
