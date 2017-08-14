@@ -179,7 +179,7 @@ class MyAccount(webapp2.RequestHandler):
 
 class SignIn(webapp2.RequestHandler):
     def get(self):
-        template = JINJA_ENV.get_template('signIn.html')
+        template = JINJA_ENV.get_template('signIn_new.html')
         # controller tells to render the index.html template
         self.response.out.write(template.render())
 
