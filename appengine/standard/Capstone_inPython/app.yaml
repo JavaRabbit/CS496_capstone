@@ -11,6 +11,14 @@ handlers:
   script: blobstore.app
 - url: /assets
   static_dir: templates/assets
+- url: /vendor
+  static_dir: templates/vendor
+- url: /css
+  static_dir: templates/css
+- url: /js
+  static_dir: templates/js
+- url: /img
+  static_dir: templates/img
 
 - url: /.*
   script: main.app

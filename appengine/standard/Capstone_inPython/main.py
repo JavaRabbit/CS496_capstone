@@ -11,9 +11,12 @@ import textwrap
 import urllib
 import cloudstorage as gcs
 import logging
+import StringIO
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-
+from google.appengine.api import datastore
+from google.appengine.ext.webapp import blobstore_handlers
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
@@ -63,7 +66,7 @@ class MainPage(webapp2.RequestHandler):
         #self.response.headers['Content-Type'] = 'text/plain'
 
         # set the view to be index.html found in folder templates
-        template = JINJA_ENV.get_template('index.html')
+        template = JINJA_ENV.get_template('index_new.html')
         # controller tells to render the index.html template
         self.response.out.write(template.render())
 
@@ -294,21 +297,29 @@ class Award(webapp2.RequestHandler):
             msg['Subject'] = "Congratulations on Your Award"
             msg['Text'] = "This award PDF for Employee of the Month"
 
-
             c = canvas.Canvas("hello.pdf")
             c.drawString(100,750,"Welcome to Reportlab!")
 
 
             #  get the award type from the form
             if aType == "month":
+                '''  #THis download the pdf to the browser
+                self.response.headers['Content-Type'] = 'application/pdf'
+                self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
+                c = canvas.Canvas(self.response.out, pagesize=A4)
+
+                c.drawString(100, 100, "Hello world")
+                c.showPage()
+                c.save() '''
                 #cover_letter = MIMEApplication(open("hello.pdf", "rb").read())
                 #cover_letter.add_header('Content-Disposition', 'attachment', filename="hello.pdf")
                 cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
                 cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
+
             else:
                 cover_letter = MIMEApplication(open("EmployeeOfTheYear.pdf", "rb").read())
                 cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheYear.pdf")
-            msg.attach(cover_letter)
+            msg.attach(cover_letter) # reshift this
 
             #msg.attach(MIMEText(file("EmployeeOfTheMonth.pdf").read()))
 
@@ -379,17 +390,22 @@ class UserDelete(webapp2.RequestHandler):
         self.redirect("/admin" )
 
 
-class PDF(webapp2.RequestHandler):
+class PDF(blobstore_handlers.BlobstoreUploadHandler):
     def get(self):
         try:
+            self.response.headers['Content-Type'] = 'application/pdf'
+            self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
+            c = canvas.Canvas(self.response.out, pagesize=A4)
 
-
+            c.drawString(100, 100, "Hello world")
+            c.showPage()
+            c.save()
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write(app_identity.get_default_gcs_bucket_name())
         except Exception, e:
 
             self.redirect("www.google.com" )
-
+# end class PDF
 
 app = webapp2.WSGIApplication([
 
