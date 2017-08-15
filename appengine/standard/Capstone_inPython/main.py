@@ -284,7 +284,7 @@ class Award(webapp2.RequestHandler):
         #in user
         e.put()
 
-        #memcache.add(key='recipname', value = self.request.get("recipname"))
+        memcache.add(key='recipname', value = self.request.get("recipname"))
         #memcache.add(key='awardType', value = self.request.get("awardType"))
 
         emailResult = ""
@@ -423,10 +423,10 @@ class CustomPDF(blobstore_handlers.BlobstoreUploadHandler):
     def get(self, id=None):
         try:
             self.response.headers['Content-Type'] = 'application/pdf'
-            self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
+            self.response.headers['Content-Disposition'] = 'attachment; filename=award.pdf'
             c = canvas.Canvas(self.response.out, pagesize=A4)
 
-            c.drawString(100, 100, "Hello world")
+            c.drawString(100, 100, memcache.get(key='recipname'))
             c.showPage()
             c.save()
             self.response.headers['Content-Type'] = 'text/plain'
