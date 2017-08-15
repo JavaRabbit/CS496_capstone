@@ -36,150 +36,54 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
+
           <li class="nav-item">
-            <a class="nav-link" href="#addEmployee">Add Employee</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#viewEmployees">View Employees</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#team">Team</a>
+            <a class="nav-link" href="#about">About</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Log Out</a>
+            <a class="nav-link" href="/admin">Admin Log In</a>
           </li>
         </ul>
       </div>
     </nav>
 
-    <!-- Header -->
-    <header class="masthead">
-      <div class="container">
-        <div class="intro-text">
-          <div class="intro-lead-in">Employee Awards Come Together</div>
-          <div class="intro-heading">Welcome, {{name}}</div>
 
-        </div>
-      </div>
-    </header>
 
-    <!-- Services -->
-    <section id="addEmployee">
+    <!-- About -->
+    <section id="about">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 text-center">
-            <h2 class="section-heading">Add a new employee</h2><br><br>
-            <!--<h3 class="section-subheading text-muted">Add an Employee</h3>  -->
-          </div>
-        </div>
-        <div class="row text-center">
-
-          <br><br>
-          <h3>Create a New Employee</h3>
-          <form action="/worker" method="post">
-                  Name:<br>
-                  <input type="text" name="name" >
-                  <br>
-                  Email:<br>
-                  <input type="text" name="email" >
-                  <br><br>
-                <div><input type="submit" class="btn btn-large btn-primary" value="Create new Employee"></div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- View All Employees -->
-    <section id="viewEmployees" style="background-color:#ffff80;">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 text-center">
-            <h2 class="section-heading">View All Your Employees</h2><br><br>
-            <h6>
-              You may need to login to your gmail account and then visit <a href="https://myaccount.google.com/lesssecureapps">allow less secure apps to use your Gmail.</a>
-            </h6>
+            <h2 class="section-heading">Sign In</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
           </div>
         </div>
         <div class="row">
           <div class="col-lg-12">
-            <h2>List of All Employees</h2>
-            <table style="table-layout: fixed;
-           width: 90%;
-           border-collapse: collapse;
-           border: 3px solid purple;">
-           <thead>
-             <tr>
-               <th>Name</th>
-               <th>email</th>
-               <th>Manager</th>
-               <th>Delete</th>
-               <th>Email Award</th>
-             </tr>
-           </thead>
-           <tbody>
-             {% for employee in allMM %}
-             <tr>
-               <td class="property-value-col">{{ employee.name }}</td>
-               <td class="property-value-col">{{ employee.email }}</td>
-               <td class="property-value-col">{{ employee.manager }}</td>
-               <td class="property-value-col">
-                 <form action="/delete/?email={{employee.email}}" method="post">
-                   <button type="submit" name="your_name" value="foobar" class="btn-link">Delete</button>
-                 </form>
-               </td>
-               <td class="property-value-col"><a href="/award?recip={{employee.name}}?email={{employee.email}}" style="color:#007bff;">Create Award</a></td>
-             {% endfor %}
-           </tbody>
-         </table>
+
+            <h2>Admin Sign In</h2>
+            <!-- the form for admin Log in -->
+            <form action="/admin" method="post">
+                    Username:<br>
+                    <input type="text" name="username" >
+                    <br>
+                    Password:<br>
+                    <input type="text" name="password">
+                    <br><br>
+
+                  <div><input type="submit" class="btn btn-large btn-primary" value="Log In"></div>
+            </form>
+
+
+            <br>
+            <a href="/"><type="button"  class="btn btn-primary">Go Back to Homepage</button></a>
+            <br>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Team -->
-    <section class="bg-light" id="team">
-      <div class="container">
-        <div class="container">
-          <div class="intro-text">
-
-            <a href="/logout" class="btn btn-xl">Log Out</a>
-            <a href="/myaccount" class="btn btn-xl">Edit Profile</a>
-          </div>
-        </div>
-
-
-      </div>
-    </section>
-
-    <!-- Clients -->
-    <section class="py-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-3 col-sm-6">
-            <a href="#">
-              <img class="img-fluid d-block mx-auto" src="/img/logos/envato.jpg" alt="">
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="#">
-              <img class="img-fluid d-block mx-auto" src="/img/logos/designmodo.jpg" alt="">
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="#">
-              <img class="img-fluid d-block mx-auto" src="/img/logos/themeforest.jpg" alt="">
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="#">
-              <img class="img-fluid d-block mx-auto" src="/img/logos/creative-market.jpg" alt="">
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
 
 
 

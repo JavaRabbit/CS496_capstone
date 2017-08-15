@@ -347,7 +347,7 @@ class AwardDelete(webapp2.RequestHandler):
 
 class Admin(webapp2.RequestHandler):
     def get(self):
-        template = JINJA_ENV.get_template('adminLogin.html')
+        template = JINJA_ENV.get_template('adminLogin_new.html')
         self.response.out.write(template.render())
 
     def post(self):
