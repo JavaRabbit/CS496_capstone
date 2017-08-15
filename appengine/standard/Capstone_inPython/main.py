@@ -284,6 +284,9 @@ class Award(webapp2.RequestHandler):
         #in user
         e.put()
 
+        #memcache.add(key='recipname', value = self.request.get("recipname"))
+        #memcache.add(key='awardType', value = self.request.get("awardType"))
+
         emailResult = ""
         try:
 
@@ -301,22 +304,12 @@ class Award(webapp2.RequestHandler):
             msg['Subject'] = self.request.get("subjectLine")
             msg['Text'] = "This award PDF for Employee of the Month"
 
-            c = canvas.Canvas("hello.pdf")
-            c.drawString(100,750,"Welcome to Reportlab!")
+            #c = canvas.Canvas("hello.pdf")
+            #c.drawString(100,750,"Welcome to Reportlab!")
 
 
             #  get the award type from the form
             if aType == "month":
-                '''  #THis download the pdf to the browser
-                self.response.headers['Content-Type'] = 'application/pdf'
-                self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
-                c = canvas.Canvas(self.response.out, pagesize=A4)
-
-                c.drawString(100, 100, "Hello world")
-                c.showPage()
-                c.save() '''
-                #cover_letter = MIMEApplication(open("hello.pdf", "rb").read())
-                #cover_letter.add_header('Content-Disposition', 'attachment', filename="hello.pdf")
                 cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
                 cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
 
@@ -342,8 +335,21 @@ class Award(webapp2.RequestHandler):
         except Exception, e:
             emailResult = "failed to email"
             self.redirect("/" )
+
+        '''
+         #THis download the pdf to the browser
+        self.response.headers['Content-Type'] = 'application/pdf'
+        self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
+        c = canvas.Canvas(self.response.out, pagesize=A4)
+
+        c.drawString(100, 100, "Hello world")
+        c.showPage()
+        c.save()
+        # end of download pdf to th browser  '''
+
         # go back to users home page
-        self.redirect("/user/" + memcache.get(key='user') )
+        #self.redirect("/user/" + memcache.get(key='user') )
+        self.redirect("/customPDF")
 
 class AwardDelete(webapp2.RequestHandler):
     def post(self, award=None):
@@ -411,6 +417,26 @@ class PDF(blobstore_handlers.BlobstoreUploadHandler):
             self.redirect("www.google.com" )
 # end class PDF
 
+# method to download the pdf
+
+class CustomPDF(blobstore_handlers.BlobstoreUploadHandler):
+    def get(self, id=None):
+        try:
+            self.response.headers['Content-Type'] = 'application/pdf'
+            self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
+            c = canvas.Canvas(self.response.out, pagesize=A4)
+
+            c.drawString(100, 100, "Hello world")
+            c.showPage()
+            c.save()
+            self.response.headers['Content-Type'] = 'text/plain'
+            self.response.write(app_identity.get_default_gcs_bucket_name())
+        except Exception, e:
+
+            self.redirect("/user/" + memcache.get(key='user') )
+        # no redirect
+
+
 app = webapp2.WSGIApplication([
 
     ('/', MainPage),
@@ -429,6 +455,7 @@ app = webapp2.WSGIApplication([
     ('/myaccount', MyAccount),
     ('/admin', Admin),
     ('/adminPage', AdminPage),
-    ('/createPDF', PDF)
+    ('/createPDF', PDF),
+    ('/customPDF', CustomPDF)
 
 ], debug=True)
