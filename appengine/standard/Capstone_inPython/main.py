@@ -12,6 +12,9 @@ import urllib
 import cloudstorage as gcs
 import logging
 import StringIO
+import time
+import datetime
+from datetime import datetime
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -275,7 +278,8 @@ class Award(webapp2.RequestHandler):
         e = Award2()
         e.recipient = self.request.get("recipname")
         e.type = self.request.get("awardType")
-        e.date = None
+        #e.date = self.request.get("date")#None
+        e.date = datetime.strptime(cgi.escape(self.request.get('date')),'%Y-%m-%d')
         e.manager = memcache.get(key='user')  # set manager to current logged
         #in user
         e.put()
