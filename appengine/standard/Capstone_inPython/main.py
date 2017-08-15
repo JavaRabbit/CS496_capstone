@@ -285,7 +285,7 @@ class Award(webapp2.RequestHandler):
         e.put()
 
         memcache.add(key='recipname', value = self.request.get("recipname"))
-        #memcache.add(key='awardType', value = self.request.get("awardType"))
+
 
         emailResult = ""
         try:
@@ -310,10 +310,12 @@ class Award(webapp2.RequestHandler):
 
             #  get the award type from the form
             if aType == "month":
+                memcache.add(key='awardType', value = "Employee of the Month")
                 cover_letter = MIMEApplication(open("EmployeeOfTheMonth.pdf", "rb").read())
                 cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheMonth.pdf")
 
             else:
+                memcache.add(key='awardType', value = "Employee of the Year")
                 cover_letter = MIMEApplication(open("EmployeeOfTheYear.pdf", "rb").read())
                 cover_letter.add_header('Content-Disposition', 'attachment', filename="EmployeeOfTheYear.pdf")
             msg.attach(cover_letter) # reshift this
@@ -426,16 +428,21 @@ class CustomPDF(blobstore_handlers.BlobstoreUploadHandler):
             self.response.headers['Content-Disposition'] = 'attachment; filename=award.pdf'
             c = canvas.Canvas(self.response.out, pagesize=A4)
 
-            c.drawString(100, 100, memcache.get(key='recipname'))
+            fromManager = "Awarded By " + memcache.get(key='user')
+            c.drawString(100, 750, memcache.get(key='recipname'))
+            c.drawString(100, 700, memcache.get(key='awardType'))
+            c.drawString(100, 650, fromManager )
             c.showPage()
             c.save()
-            self.response.headers['Content-Type'] = 'text/plain'
-            self.response.write(app_identity.get_default_gcs_bucket_name())
+
+
+            #self.response.headers['Content-Type'] = 'text/plain'
+            #self.response.write(app_identity.get_default_gcs_bucket_name())
         except Exception, e:
 
             self.redirect("/user/" + memcache.get(key='user') )
         # no redirect
-
+        # it will save the pdf if there is no redirect
 
 app = webapp2.WSGIApplication([
 
