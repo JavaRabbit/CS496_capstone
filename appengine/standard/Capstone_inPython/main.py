@@ -158,9 +158,9 @@ class MyAccount(webapp2.RequestHandler):
 
         query = User.query(User.username == memcache.get(key='user')).get()
         q_d = query.to_dict()
-        template_vars['stuff'] = q_d
+        template_vars['theUser'] = q_d
 
-        template = JINJA_ENV.get_template('myaccount.html')
+        template = JINJA_ENV.get_template('myaccount_new.html')
         self.response.out.write(template.render(template_vars))
 
     # method for updating user account settings
@@ -264,7 +264,7 @@ class Award(webapp2.RequestHandler):
         # put values into a dictionary so view can use them
         template_vars = { "recip" : recip, "email" : email , "current_user" : memcache.get(key='user'), "sender_email" : q_d['email']}
 
-        template = JINJA_ENV.get_template('createAward.html')
+        template = JINJA_ENV.get_template('createAward_new.html')
         self.response.out.write(template.render(template_vars))
 
 
@@ -294,7 +294,7 @@ class Award(webapp2.RequestHandler):
             msg = MIMEMultipart()
 
             # Add the email subject line
-            msg['Subject'] = "Congratulations on Your Award"
+            msg['Subject'] = self.request.get("subjectLine")
             msg['Text'] = "This award PDF for Employee of the Month"
 
             c = canvas.Canvas("hello.pdf")

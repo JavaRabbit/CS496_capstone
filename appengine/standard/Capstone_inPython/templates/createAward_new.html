@@ -55,28 +55,48 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-12 text-center">
-            <h2 class="section-heading">Update User Profile</h2>
-
+            <h2 class="section-heading">Create a New Employee Award</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
           </div>
         </div>
         <div class="row">
           <div class="col-lg-12">
-            <form action="/myaccount" method="post">
-                    Email:<br>
-                    <input type="text" name="email" value={{theUser.email}}>
+            <h2>Create a new employee award</h2>
+            <!-- the form for a new award -->
+            <form action="/award" method="post">
+                    Recipient Name:<br>
+                    <input size="30" type="text" name="recipname" value={{recip}}>
                     <br>
-                    Password:<br>
-                    <input type="text" name="password" >
-                    <br>
-                    Name:<br>
-                    <input type="text" name="name" value={{theUser.name}}>
+                    Recipient Email:<br>
+                    <input size="30" type="text" name="recipemail" value={{email}} >
                     <br><br>
-                  <div><input type="submit" class="btn btn-large btn-primary" value="Save Profile Changes"></div>
+
+                    Email Subject Line:<br>
+                    <input size="40" type="text" name="subjectLine" value="Congratulations on Your Award" >
+                    <br><br>
+
+
+                    <br><br>
+
+                    Award Type:<br>
+                    <select name="awardType">
+                      <option value="month">Employee of the Month</option>
+                      <option value="year">Employee of the Year</option>
+                    </select>
+                    <br><br>
+                    Senders Email Address:<br>
+                    <input size="30" type="text" name="manageremail" value={{sender_email}} }>
+                    <br>
+                    Sender Email Address Password:<br>
+                    <input size="30" type="text" name="managerpassword"  >
+                    <br><br>
+
+                  <div><input type="submit" class="btn btn-large btn-primary" value="Email Award"></div>
             </form>
 
 
             <br>
-            <a href="/user/{{theUser.username}}"><type="button"  class="btn btn-primary">Go Back</button></a>
+            <a href="/user/{{current_user}}"><type="button"  class="btn btn-primary">Go Back</button></a>
             <br>
           </div>
         </div>
