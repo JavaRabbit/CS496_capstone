@@ -42,9 +42,11 @@
           <li class="nav-item">
             <a class="nav-link" href="#viewEmployees">View Employees</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" href="#team">Team</a>
+            <a class="nav-link" href="#viewAwards">View Awards</a>
           </li>
+          
 
           <li class="nav-item">
             <a class="nav-link" href="/logout">Log Out</a>
@@ -133,6 +135,52 @@
              {% endfor %}
            </tbody>
          </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- View All Awards -->
+    <section id="viewAwards">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <h2 class="section-heading">View All Awards</h2><br><br>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <h2>List of All Awards</h2>
+            <table style="table-layout: fixed;
+            width: 90%;
+            border-collapse: collapse;
+            border: 3px solid purple;">
+            <thead>
+               <tr>
+                 <th>Recipient</th>
+                 <th>Type</th>
+                 <th>Date Awarded</th>
+                 <th>Delete</th>
+               </tr>
+            </thead>
+            <tbody>
+
+             {% for award in allAwards %}
+             <tr>
+               <td class="property-value-col">{{ award.recipient }}</td>
+               <td class="property-value-col">{{ award.type }}</td>
+               <td class="property-value-col">{{ award.date }}</td>
+               <td class="property-value-col">
+                 <form action="/deleteAward/?award={{count}}" method="post">
+                   <button type="submit" name="your_name" value="foobar" class="btn-link">delete</button>
+                 </form>
+               </td>
+
+             {% endfor %}
+            </tbody>
+            </table>
           </div>
         </div>
       </div>

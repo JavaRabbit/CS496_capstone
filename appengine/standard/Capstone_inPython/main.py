@@ -161,6 +161,8 @@ class MyAccount(webapp2.RequestHandler):
 
         query = User.query(User.username == memcache.get(key='user')).get()
         q_d = query.to_dict()
+        thename = q_d['name']
+        theemail = q_d['email']
         template_vars['theUser'] = q_d
 
         template = JINJA_ENV.get_template('myaccount_new.html')
@@ -428,10 +430,14 @@ class CustomPDF(blobstore_handlers.BlobstoreUploadHandler):
             self.response.headers['Content-Disposition'] = 'attachment; filename=award.pdf'
             c = canvas.Canvas(self.response.out, pagesize=A4)
 
+            query = User.query(User.username == memcache.get(key='user')).get()
+            q_d = query.to_dict()
+            #query.name
             fromManager = "Awarded By " + memcache.get(key='user')
             c.drawString(100, 750, memcache.get(key='recipname'))
             c.drawString(100, 700, memcache.get(key='awardType'))
             c.drawString(100, 650, fromManager )
+            c.drawString(100, 600, query.name)
             c.showPage()
             c.save()
 
